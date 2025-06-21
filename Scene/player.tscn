@@ -1,11 +1,14 @@
-[gd_scene load_steps=57 format=3 uid="uid://cmnxm7r8efopp"]
+[gd_scene load_steps=60 format=3 uid="uid://cmnxm7r8efopp"]
 
 [ext_resource type="Texture2D" uid="uid://bxh4pnnl7i0l8" path="res://assets/Character/Knight/Idle.png" id="1_aa5mc"]
-[ext_resource type="Script" path="res://Scripts/Player scripts/player.gd" id="1_evuy3"]
+[ext_resource type="Script" path="res://Scripts/Player_scripts/player.gd" id="1_q82ig"]
 [ext_resource type="Texture2D" uid="uid://do7cm8n21oigy" path="res://assets/Character/Knight/Run.png" id="2_eolq7"]
 [ext_resource type="Texture2D" uid="uid://bdjgp1pos5otp" path="res://assets/Character/Knight/crouch_idle.png" id="2_fffqf"]
 [ext_resource type="Texture2D" uid="uid://oxy6t7elsfde" path="res://assets/Character/Knight/Jump.png" id="3_ud6d8"]
 [ext_resource type="Texture2D" uid="uid://dmw54k608ji2y" path="res://assets/Character/Knight/Slidev2-Sheet.png" id="6_mrjr5"]
+[ext_resource type="AudioStream" uid="uid://bron0g3dhvnll" path="res://assets/Audio/SFX/Footstep/Dirt Run 1.ogg" id="7_0r8gc"]
+[ext_resource type="AudioStream" uid="uid://b74hmmyk8evqc" path="res://assets/Audio/SFX/Footstep/Dirt Jump.ogg" id="8_hn23s"]
+[ext_resource type="AudioStream" uid="uid://cfwk1akfd0ayu" path="res://assets/Audio/SFX/Footstep/Dirt Land.ogg" id="9_3lnbj"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pnoq8"]
 atlas = ExtResource("2_fffqf")
@@ -484,7 +487,7 @@ _data = {
 [node name="Node2D" type="Node2D"]
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
-script = ExtResource("1_evuy3")
+script = ExtResource("1_q82ig")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D"]
 texture_filter = 1
@@ -500,7 +503,17 @@ offset = Vector2(0, -25)
 zoom = Vector2(2.2, 2.2)
 position_smoothing_enabled = true
 
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="CharacterBody2D"]
+[node name="Dirt_run_SFX" type="AudioStreamPlayer2D" parent="CharacterBody2D"]
+stream = ExtResource("7_0r8gc")
+pitch_scale = 1.98
+
+[node name="Dirt_jump_SFX" type="AudioStreamPlayer2D" parent="CharacterBody2D"]
+stream = ExtResource("8_hn23s")
+pitch_scale = 2.02
+
+[node name="Dirt_land_SFX" type="AudioStreamPlayer2D" parent="CharacterBody2D"]
+stream = ExtResource("9_3lnbj")
+pitch_scale = 2.03
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

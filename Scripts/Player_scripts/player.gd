@@ -1,10 +1,10 @@
 extends CharacterBody2D
 
-const SPEED = 180.0
+const SPEED = 150.0
 const AIR_SPEED_MULTIPLIER = 0.9
 const INITIAL_JUMP_VELOCITY = -200.0
-const MAX_JUMP_HOLD_TIME = 0.5  # Lama maksimum tahan lompat
-const EXTRA_JUMP_FORCE = -400.0  # Tambahan gaya loncat saat ditahan
+const MAX_JUMP_HOLD_TIME = 0.5
+const EXTRA_JUMP_FORCE = -400.0
 const GRAVITY = 1000.0
 const SLIDE_DURATION = 0.5
 const SLIDE_SPEED = 220
@@ -12,17 +12,27 @@ const SLIDE_COOLDOWN = 1.2
 
 @onready var anim_player = $"../AnimationPlayer"
 @onready var sprite = $AnimatedSprite2D
+@onready var sfx_run = $Dirt_run_SFX
+@onready var sfx_jump = $Dirt_jump_SFX
+@onready var sfx_land = $Dirt_land_SFX
 
 var slide_timer := 0.0
 var slide_cooldown_timer := 0.0
 var is_sliding := false
 var is_crouching := false
 
-# Untuk long jump
 var is_jumping := false
 var jump_hold_timer := 0.0
 
+var was_on_floor := true  # Untuk deteksi mendarat
+
 func _physics_process(delta: float) -> void:
+	# =============== DETEKSI LANDING ===============
+	if not was_on_floor and is_on_floor():
+		sfx_land.play()
+
+	was_on_floor = is_on_floor()
+
 	# =============== GRAVITASI ===============
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
@@ -37,6 +47,7 @@ func _physics_process(delta: float) -> void:
 		is_jumping = true
 		jump_hold_timer = 0.0
 		anim_player.play("Jump")
+		sfx_jump.play()
 
 	# =============== LONG JUMP HOLD ===============
 	if is_jumping and Input.is_action_pressed("jump"):
@@ -81,16 +92,22 @@ func _physics_process(delta: float) -> void:
 		else:
 			velocity.x = move_toward(velocity.x, 0, SPEED)
 
-	# =============== ANIMASI ===============
+	# =============== ANIMASI + SFX LANGKAH ===============
 	if not is_sliding and not is_crouching:
 		if not is_on_floor():
 			if anim_player.current_animation != "Jump":
 				anim_player.play("Jump")
+			sfx_run.stop()
 		elif direction != 0:
 			if anim_player.current_animation != "Run":
 				anim_player.play("Run")
+			if not sfx_run.playing:
+				sfx_run.play()
 		else:
 			if anim_player.current_animation != "Idle":
 				anim_player.play("Idle")
+			sfx_run.stop()
+	else:
+		sfx_run.stop()
 
 	move_and_slide()
