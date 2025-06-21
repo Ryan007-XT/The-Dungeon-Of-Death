@@ -23,16 +23,9 @@ var is_crouching := false
 
 var is_jumping := false
 var jump_hold_timer := 0.0
-
-var was_on_floor := true  # Untuk deteksi mendarat
+var was_on_floor := true  # Untuk mendeteksi landing
 
 func _physics_process(delta: float) -> void:
-	# =============== DETEKSI LANDING ===============
-	if not was_on_floor and is_on_floor():
-		sfx_land.play()
-
-	was_on_floor = is_on_floor()
-
 	# =============== GRAVITASI ===============
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
@@ -49,8 +42,8 @@ func _physics_process(delta: float) -> void:
 		anim_player.play("Jump")
 		sfx_jump.play()
 
-	# =============== LONG JUMP HOLD ===============
-	if is_jumping and Input.is_action_pressed("jump"):
+	# =============== LONG JUMP HOLD (PERBAIKAN DI SINI) ===============
+	if is_jumping and Input.is_action_pressed("jump") and not is_on_ceiling():
 		jump_hold_timer += delta
 		if jump_hold_timer < MAX_JUMP_HOLD_TIME:
 			velocity.y += EXTRA_JUMP_FORCE * delta
@@ -92,7 +85,7 @@ func _physics_process(delta: float) -> void:
 		else:
 			velocity.x = move_toward(velocity.x, 0, SPEED)
 
-	# =============== ANIMASI + SFX LANGKAH ===============
+	# =============== ANIMASI DAN SFX LANGKAH ===============
 	if not is_sliding and not is_crouching:
 		if not is_on_floor():
 			if anim_player.current_animation != "Jump":
@@ -109,5 +102,10 @@ func _physics_process(delta: float) -> void:
 			sfx_run.stop()
 	else:
 		sfx_run.stop()
+
+	# =============== DETEKSI LANDING SFX ===============
+	if not was_on_floor and is_on_floor():
+		sfx_land.play()
+	was_on_floor = is_on_floor()
 
 	move_and_slide()
