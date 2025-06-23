@@ -18,6 +18,8 @@ const COMBO_RESET_TIME = 0.5
 @onready var sfx_run = $Dirt_run_SFX
 @onready var sfx_jump = $Dirt_jump_SFX
 @onready var sfx_land = $Dirt_land_SFX
+@onready var sfx_attack_1 = $Attack_SFX_1
+@onready var sfx_attack_2 = $Attack_SFX_2
 @onready var hitboxes = {
 	"Attack-1": $AreaAttack_1,
 	"Attack-2": $AreaAttack_2,
@@ -116,7 +118,6 @@ func process_ground_movement() -> void:
 	var direction = Input.get_axis("run-left", "run-right")
 	if direction != 0:
 		velocity.x = direction * SPEED
-		# Update flip and hitbox immediately
 		if sprite.flip_h != (direction < 0):
 			sprite.flip_h = direction < 0
 			update_hitbox_direction()
@@ -127,7 +128,6 @@ func process_air_movement() -> void:
 	var direction = Input.get_axis("run-left", "run-right")
 	if direction != 0:
 		velocity.x = direction * SPEED * AIR_SPEED_MULTIPLIER
-		# Update flip and hitbox immediately
 		if sprite.flip_h != (direction < 0):
 			sprite.flip_h = direction < 0
 			update_hitbox_direction()
@@ -141,11 +141,9 @@ func update_hitbox_direction():
 		var original_pos = original_hitbox_positions[attack_name]
 		
 		if sprite.flip_h:
-			# Flip hitbox position and direction
 			hitbox.position.x = -original_pos.x
 			hitbox.scale.x = -1
 		else:
-			# Reset to original position
 			hitbox.position.x = original_pos.x
 			hitbox.scale.x = 1
 # END OF HITBOX FLIP SYSTEM ==============================================
@@ -208,6 +206,13 @@ func start_attack() -> void:
 	current_attack_name = "Attack-%d" % attack_phase
 	activate_hitbox(current_attack_name)
 	anim_player.play(current_attack_name)
+
+	# Play attack sound based on phase
+	match attack_phase:
+		1, 3:
+			sfx_attack_1.play()
+		2:
+			sfx_attack_2.play()
 
 func activate_hitbox(attack_name: String) -> void:
 	for name in hitboxes:
