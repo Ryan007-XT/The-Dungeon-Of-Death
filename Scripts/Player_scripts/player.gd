@@ -215,9 +215,9 @@ func start_attack() -> void:
 			sfx_attack_2.play()
 
 func activate_hitbox(attack_name: String) -> void:
-	for name in hitboxes:
-		hitboxes[name].monitoring = false
-		hitboxes[name].get_node("CollisionShape2D").disabled = true
+	for attackname in hitboxes:
+		hitboxes[attackname].monitoring = false
+		hitboxes[attackname].get_node("CollisionShape2D").disabled = true
 	
 	if hitboxes.has(attack_name):
 		hitboxes[attack_name].monitoring = true
