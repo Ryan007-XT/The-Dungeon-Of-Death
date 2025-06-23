@@ -10,7 +10,7 @@ const GRAVITY = 1000.0
 const SLIDE_DURATION = 0.5
 const SLIDE_SPEED = 220
 const SLIDE_COOLDOWN = 1.2
-const COMBO_RESET_TIME = 0.7
+const COMBO_RESET_TIME = 0.5
 
 # Node references
 @onready var anim_player = $"../AnimationPlayer"
