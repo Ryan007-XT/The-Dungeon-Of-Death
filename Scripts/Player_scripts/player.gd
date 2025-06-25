@@ -7,9 +7,6 @@ const INITIAL_JUMP_VELOCITY = -200.0
 const MAX_JUMP_HOLD_TIME = 0.5
 const EXTRA_JUMP_FORCE = -400.0
 const GRAVITY = 1000.0
-const SLIDE_DURATION = 0.5
-const SLIDE_SPEED = 220
-const SLIDE_COOLDOWN = 1.2
 const COMBO_RESET_TIME = 0.5
 
 # Node references
@@ -30,9 +27,6 @@ const COMBO_RESET_TIME = 0.5
 var original_hitbox_positions = {}
 
 # State variables
-var slide_timer := 0.0
-var slide_cooldown_timer := 0.0
-var is_sliding := false
 var is_jumping := false
 var jump_hold_timer := 0.0
 var was_on_floor := true
@@ -45,7 +39,7 @@ var current_attack_name := ""
 var can_chain_attack := false
 
 # State machine
-enum PlayerState { GROUND, AIR, SLIDE, CROUCH, ATTACK }
+enum PlayerState { GROUND, AIR, CROUCH, ATTACK }
 var current_state = PlayerState.GROUND
 
 func _ready():
@@ -72,11 +66,6 @@ func apply_gravity(delta: float) -> void:
 		velocity.y += GRAVITY * delta
 
 func update_timers(delta: float) -> void:
-	slide_cooldown_timer = max(0.0, slide_cooldown_timer - delta)
-	if is_sliding:
-		slide_timer -= delta
-		if slide_timer <= 0.0:
-			is_sliding = false
 	if combo_timer > 0:
 		combo_timer -= delta
 	elif is_attacking:
@@ -85,9 +74,7 @@ func update_timers(delta: float) -> void:
 func handle_state_transitions() -> void:
 	if is_attacking:
 		current_state = PlayerState.ATTACK
-	elif is_sliding:
-		current_state = PlayerState.SLIDE
-	elif is_on_floor() and Input.is_action_pressed("crouch") and not is_sliding:
+	elif is_on_floor() and Input.is_action_pressed("crouch"):
 		current_state = PlayerState.CROUCH
 	elif is_on_floor():
 		current_state = PlayerState.GROUND
@@ -99,14 +86,11 @@ func process_state_behavior(delta: float) -> void:
 		PlayerState.GROUND:
 			process_ground_movement()
 			process_jump()
-			process_slide_initiation()
 			process_attack_input()
 		PlayerState.AIR:
 			process_air_movement()
 			process_jump_extension(delta)
 			process_attack_input()
-		PlayerState.SLIDE:
-			process_slide_movement()
 		PlayerState.CROUCH:
 			process_crouch_behavior()
 		PlayerState.ATTACK:
@@ -169,19 +153,6 @@ func process_jump_extension(delta: float) -> void:
 	else:
 		is_jumping = false
 
-func process_slide_initiation() -> void:
-	if Input.is_action_just_pressed("slide") and slide_cooldown_timer <= 0.0:
-		start_slide()
-
-func start_slide() -> void:
-	is_sliding = true
-	slide_timer = SLIDE_DURATION
-	slide_cooldown_timer = SLIDE_COOLDOWN
-	anim_player.play("Slide")
-
-func process_slide_movement() -> void:
-	velocity.x = -SLIDE_SPEED if sprite.flip_h else SLIDE_SPEED
-
 func process_crouch_behavior() -> void:
 	velocity.x = 0
 	if not Input.is_action_pressed("crouch"):
@@ -214,14 +185,14 @@ func start_attack() -> void:
 		2:
 			sfx_attack_2.play()
 
-func activate_hitbox(attack_name: String) -> void:
-	for attackname in hitboxes:
-		hitboxes[attackname].monitoring = false
-		hitboxes[attackname].get_node("CollisionShape2D").disabled = true
+func activate_hitbox(attack_true: String) -> void:
+	for attack_false in hitboxes:
+		hitboxes[attack_false].monitoring = false
+		hitboxes[attack_false].get_node("CollisionShape2D").disabled = true
 	
-	if hitboxes.has(attack_name):
-		hitboxes[attack_name].monitoring = true
-		hitboxes[attack_name].get_node("CollisionShape2D").disabled = false
+	if hitboxes.has(attack_true):
+		hitboxes[attack_true].monitoring = true
+		hitboxes[attack_true].get_node("CollisionShape2D").disabled = false
 
 func reset_combo() -> void:
 	is_attacking = false
@@ -252,10 +223,6 @@ func update_animation_and_sfx() -> void:
 		PlayerState.AIR:
 			if anim_player.current_animation != "Jump":
 				anim_player.play("Jump")
-			sfx_run.stop()
-		PlayerState.SLIDE:
-			if anim_player.current_animation != "Slide":
-				anim_player.play("Slide")
 			sfx_run.stop()
 		PlayerState.CROUCH:
 			if anim_player.current_animation != "Crouch-idle":

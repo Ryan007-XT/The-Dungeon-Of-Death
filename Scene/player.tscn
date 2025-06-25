@@ -739,8 +739,8 @@ script = ExtResource("1_q82ig")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D"]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_pakqs")
-animation = &"Attack-1"
-frame_progress = 0.395
+animation = &"Idle"
+frame = 5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
 position = Vector2(2, 8.5)
@@ -750,6 +750,8 @@ shape = SubResource("RectangleShape2D_m04h0")
 offset = Vector2(0, -25)
 zoom = Vector2(2.2, 2.2)
 position_smoothing_enabled = true
+rotation_smoothing_enabled = true
+editor_draw_limits = true
 
 [node name="Dirt_run_SFX" type="AudioStreamPlayer2D" parent="CharacterBody2D"]
 stream = ExtResource("7_0r8gc")
