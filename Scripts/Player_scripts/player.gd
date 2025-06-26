@@ -12,6 +12,7 @@ const COMBO_RESET_TIME = 0.5
 # Node references
 @onready var anim_player = $"../AnimationPlayer"
 @onready var sprite = $AnimatedSprite2D
+@onready var collision_body = $CollisionShape2D # Referensi ke CollisionShape2D
 @onready var sfx_run = $Dirt_run_SFX
 @onready var sfx_jump = $Dirt_jump_SFX
 @onready var sfx_land = $Dirt_land_SFX
@@ -25,6 +26,7 @@ const COMBO_RESET_TIME = 0.5
 
 # Hitbox flip system
 var original_hitbox_positions = {}
+var original_collision_position: Vector2 # Simpan posisi asli collision shape
 
 # State variables
 var is_jumping := false
@@ -51,6 +53,10 @@ func _ready():
 		original_hitbox_positions[attack_name] = hitbox.position
 		hitbox.monitoring = false
 		hitbox.get_node("CollisionShape2D").disabled = true
+	
+	# Simpan posisi asli collision shape tubuh
+	if collision_body:
+		original_collision_position = collision_body.position
 
 func _physics_process(delta: float) -> void:
 	apply_gravity(delta)
@@ -118,8 +124,9 @@ func process_air_movement() -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 
-# HITBOX FLIP SYSTEM =====================================================
+# HITBOX DAN COLLISION FLIP SYSTEM =============================================
 func update_hitbox_direction():
+	# Update arah hitbox
 	for attack_name in hitboxes:
 		var hitbox = hitboxes[attack_name]
 		var original_pos = original_hitbox_positions[attack_name]
@@ -130,7 +137,16 @@ func update_hitbox_direction():
 		else:
 			hitbox.position.x = original_pos.x
 			hitbox.scale.x = 1
-# END OF HITBOX FLIP SYSTEM ==============================================
+	
+	# Update arah collision shape tubuh
+	if collision_body:
+		if sprite.flip_h:
+			# Geser collision shape ke kiri jika sprite menghadap kiri
+			collision_body.position.x = -original_collision_position.x
+		else:
+			# Kembalikan ke posisi semula jika menghadap kanan
+			collision_body.position.x = original_collision_position.x
+# END OF FLIP SYSTEM ===========================================================
 
 func process_jump() -> void:
 	if Input.is_action_just_pressed("jump"):
