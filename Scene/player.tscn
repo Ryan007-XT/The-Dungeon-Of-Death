@@ -731,9 +731,11 @@ _data = {
 "Slide": SubResource("Animation_kwyr2")
 }
 
-[node name="Node2D" type="Node2D"]
+[node name="Node2D_Player" type="Node2D"]
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+z_index = 1
+collision_layer = 9
 script = ExtResource("1_q82ig")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D"]

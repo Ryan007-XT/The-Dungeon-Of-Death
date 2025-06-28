@@ -2,10 +2,10 @@ extends CharacterBody2D
 
 # Constants
 const SPEED = 150.0
-const AIR_SPEED_MULTIPLIER = 0.9
-const INITIAL_JUMP_VELOCITY = -200.0
+const AIR_SPEED_MULTIPLIER = 1
+const INITIAL_JUMP_VELOCITY = -230.0
 const MAX_JUMP_HOLD_TIME = 0.5
-const EXTRA_JUMP_FORCE = -400.0
+const EXTRA_JUMP_FORCE = -450.0
 const GRAVITY = 1000.0
 const COMBO_RESET_TIME = 0.5
 
