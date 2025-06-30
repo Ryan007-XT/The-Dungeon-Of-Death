@@ -18,3 +18,6 @@ parameters/looping = false
 
 [node name="Node2D_Skeleton" parent="." instance=ExtResource("4_y6kss")]
 position = Vector2(96, 592)
+
+[node name="Node2D_Skeleton2" parent="." instance=ExtResource("4_y6kss")]
+position = Vector2(152, 592)

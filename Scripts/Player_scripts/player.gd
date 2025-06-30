@@ -10,7 +10,7 @@ const GRAVITY = 1000.0
 const COMBO_RESET_TIME = 0.5
 
 # Node references
-@onready var anim_player = $"../AnimationPlayer"
+@onready var anim_player = $"AnimationPlayer"
 @onready var sprite = $AnimatedSprite2D
 @onready var collision_body = $CollisionShape2D # Referensi ke CollisionShape2D
 @onready var sfx_run = $Dirt_run_SFX

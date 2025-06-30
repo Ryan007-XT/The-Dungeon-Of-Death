@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://ga6mfm32p5sc"
+path="res://.godot/imported/Dirt Chain Walk 3 skeleton.ogg-e7c66e32a77d7b6a2355c3de2fc0d963.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/Audio/SFX/Footstep/Dirt Chain Walk 3 skeleton.ogg"
+dest_files=["res://.godot/imported/Dirt Chain Walk 3 skeleton.ogg-e7c66e32a77d7b6a2355c3de2fc0d963.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

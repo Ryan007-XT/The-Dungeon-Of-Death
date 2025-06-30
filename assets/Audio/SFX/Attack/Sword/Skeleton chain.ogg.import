@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://by57i0jqnc6ge"
+path="res://.godot/imported/Skeleton chain.ogg-5fbfca5b18f62aa712bae9cec4c04efe.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/Audio/SFX/Attack/Sword/Skeleton chain.ogg"
+dest_files=["res://.godot/imported/Skeleton chain.ogg-5fbfca5b18f62aa712bae9cec4c04efe.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
