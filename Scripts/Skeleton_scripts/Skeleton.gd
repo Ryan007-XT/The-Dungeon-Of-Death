@@ -14,23 +14,33 @@ var player_in_hitbox = false
 @onready var attack_timer = $Timer
 @onready var raycast = $RayCast2D
 @onready var walk_sfx = $Walk_SFX
+@onready var attack_sfx = $Attack_SFX
 
 var original_hitbox_transform: Transform2D
 
 func _ready() -> void:
-	# Masuk ke grup enemy (masih berguna kalau kamu ingin seleksi semua musuh nantinya)
 	add_to_group("enemies")
 
-	# Variasi kecepatan (range diperluas)
 	speed += randf_range(-10, 10)
 
 	attack_timer.wait_time = 1.0
 	attack_timer.one_shot = true
 	original_hitbox_transform = hitbox_area.transform
 
+	# Set pitch walk random di awal
+	walk_sfx.pitch_scale = randf_range(0.7, 1.0)
+
 func _physics_process(delta):
 	velocity.y += gravity * delta
 	adjust_hitbox_transform()
+
+	# Cek frame animasi untuk trigger SFX Attack
+	if is_attacking and animated_sprite.animation == "Attack":
+		var frame = animated_sprite.frame
+		if frame == 4 or frame == 8:
+			if not attack_sfx.playing:
+				attack_sfx.pitch_scale = randf_range(2.9, 3.2)
+				attack_sfx.play()
 
 	if is_attacking:
 		pass
@@ -69,6 +79,7 @@ func chase_player():
 	animated_sprite.flip_h = velocity.x < 0
 
 	if not walk_sfx.playing:
+		walk_sfx.pitch_scale = randf_range(0.7, 1.0)
 		walk_sfx.play()
 
 func idle_state():

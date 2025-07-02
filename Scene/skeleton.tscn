@@ -308,6 +308,9 @@ tracks/1/keys = {
 "values": ["Idle"]
 }
 
+[sub_resource type="Animation" id="Animation_mkcb6"]
+length = 0.001
+
 [sub_resource type="Animation" id="Animation_qyikx"]
 length = 1.2
 loop_mode = 1
@@ -335,9 +338,6 @@ tracks/1/keys = {
 "update": 1,
 "values": ["Run"]
 }
-
-[sub_resource type="Animation" id="Animation_mkcb6"]
-length = 0.001
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_vbirg"]
 _data = {
@@ -391,7 +391,7 @@ debug_color = Color(0.989076, 0, 0.294693, 0.42)
 [node name="RayCast2D" type="RayCast2D" parent="CharacterBody2D"]
 position = Vector2(0, -10)
 target_position = Vector2(207, 0)
-collision_mask = 2
+collision_mask = 3
 
 [node name="Walk_SFX" type="AudioStreamPlayer2D" parent="CharacterBody2D"]
 stream = ExtResource("3_lt0eu")
