@@ -1,4 +1,6 @@
-extends Node2D
+extends CharacterBody2D
+
+@export var default_facing_left := false  # Atur dari Inspector untuk arah awal
 
 var speed = 40
 var gravity = 1000
@@ -9,27 +11,34 @@ var is_attacking = false
 var attack_cooldown = false
 var player_in_hitbox = false
 
-@onready var character_body = $CharacterBody2D
-@onready var animated_sprite = $CharacterBody2D/AnimatedSprite2D
-@onready var hitbox_area = $CharacterBody2D/HitboxArea
-@onready var attack_timer = $CharacterBody2D/Timer
-@onready var raycast = $CharacterBody2D/RayCast2D
-@onready var walk_sfx = $CharacterBody2D/Walk_SFX
-@onready var attack_sfx = $CharacterBody2D/Attack_SFX
+@onready var animated_sprite = $AnimatedSprite2D
+@onready var hitbox_area = $HitboxArea
+@onready var attack_timer = $Timer
+@onready var raycast = $RayCast2D
+@onready var walk_sfx = $Walk_SFX
+@onready var attack_sfx = $Attack_SFX
 
 var original_hitbox_transform: Transform2D
 
 func _ready() -> void:
 	add_to_group("enemies")
+
 	speed += randf_range(-10, 10)
+
 	attack_timer.wait_time = 1.0
 	attack_timer.one_shot = true
+
 	original_hitbox_transform = hitbox_area.transform
+
 	walk_sfx.pitch_scale = randf_range(0.7, 1.0)
 
+	# Atur arah awal berdasarkan facing
+	animated_sprite.flip_h = default_facing_left
+	adjust_hitbox_transform()
+
 func _physics_process(delta):
-	# Terapkan gravitasi ke CharacterBody2D
-	character_body.velocity.y += gravity * delta
+	# Terapkan gravitasi
+	velocity.y += gravity * delta
 	adjust_hitbox_transform()
 
 	# Cek frame animasi untuk trigger SFX Attack
@@ -50,7 +59,7 @@ func _physics_process(delta):
 		idle_state()
 
 	# Pindahkan CharacterBody2D
-	character_body.move_and_slide()
+	move_and_slide()
 
 func adjust_hitbox_transform():
 	if animated_sprite.flip_h:
@@ -60,7 +69,7 @@ func adjust_hitbox_transform():
 
 func start_attack():
 	is_attacking = true
-	character_body.velocity.x = 0
+	velocity.x = 0
 	animated_sprite.play("Attack")
 	attack_cooldown = true
 	attack_timer.start()
@@ -69,20 +78,20 @@ func start_attack():
 		walk_sfx.stop()
 
 func chase_player():
-	var direction = (player.global_position - character_body.global_position).normalized()
-	character_body.velocity.x = direction.x * speed
+	var direction = (player.global_position - global_position).normalized()
+	velocity.x = direction.x * speed
 
 	if animated_sprite.animation != "Run":
 		animated_sprite.play("Run")
 
-	animated_sprite.flip_h = character_body.velocity.x < 0
+	animated_sprite.flip_h = velocity.x < 0
 
 	if not walk_sfx.playing:
 		walk_sfx.pitch_scale = randf_range(0.7, 1.0)
 		walk_sfx.play()
 
 func idle_state():
-	character_body.velocity.x = 0
+	velocity.x = 0
 	if animated_sprite.animation != "Idle" and !is_attacking:
 		animated_sprite.play("Idle")
 
