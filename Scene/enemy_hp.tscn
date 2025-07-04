@@ -1,0 +1,60 @@
+[gd_scene load_steps=7 format=3 uid="uid://07vliw6btaxs"]
+
+[ext_resource type="Script" path="res://Scripts/enemy_hp_script/enemy_hp.gd" id="1_b5irm"]
+[ext_resource type="Texture2D" uid="uid://dodsmbi4gqtm8" path="res://assets/UI/DarkRedUISheet.png" id="1_t0pgf"]
+[ext_resource type="Texture2D" uid="uid://dx33ygrprbvmh" path="res://assets/UI/BlackGreyUISheet.png" id="2_3ghrq"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qpsjo"]
+atlas = ExtResource("1_t0pgf")
+region = Rect2(180, 202, 48, 8)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1x0cw"]
+atlas = ExtResource("1_t0pgf")
+region = Rect2(182, 220, 44, 4)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5wkuh"]
+atlas = ExtResource("2_3ghrq")
+region = Rect2(182, 220, 44, 4)
+
+[node name="EnemyHP" type="Control"]
+texture_filter = 1
+layout_mode = 3
+anchor_right = 0.042
+anchor_bottom = 0.012
+offset_right = -0.384003
+offset_bottom = 0.224
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_b5irm")
+
+[node name="Bar" type="TextureProgressBar" parent="."]
+z_index = -1
+texture_filter = 1
+layout_mode = 0
+offset_right = 48.0
+offset_bottom = 8.0
+texture_under = SubResource("AtlasTexture_qpsjo")
+
+[node name="HealthBar" type="TextureProgressBar" parent="."]
+layout_mode = 0
+offset_right = 48.0
+offset_bottom = 8.0
+max_value = 60.0
+value = 60.0
+texture_progress = SubResource("AtlasTexture_1x0cw")
+texture_progress_offset = Vector2(2, 2)
+
+[node name="DamageBar" type="TextureProgressBar" parent="."]
+z_index = -1
+layout_mode = 0
+offset_right = 48.0
+offset_bottom = 8.0
+value = 80.0
+texture_progress = SubResource("AtlasTexture_5wkuh")
+texture_progress_offset = Vector2(2, 2)
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.4
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

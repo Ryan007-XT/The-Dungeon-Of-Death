@@ -12,7 +12,7 @@ const COMBO_RESET_TIME = 0.5
 # Node references
 @onready var anim_player = $"AnimationPlayer"
 @onready var sprite = $AnimatedSprite2D
-@onready var collision_body = $CollisionShape2D # Referensi ke CollisionShape2D
+@onready var collision_body = $CollisionShape2D
 @onready var sfx_run = $Dirt_run_SFX
 @onready var sfx_jump = $Dirt_jump_SFX
 @onready var sfx_land = $Dirt_land_SFX
@@ -24,37 +24,31 @@ const COMBO_RESET_TIME = 0.5
 	"Attack-3": $AreaAttack_3
 }
 
-# Hitbox flip system
 var original_hitbox_positions = {}
-var original_collision_position: Vector2 # Simpan posisi asli collision shape
+var original_collision_position: Vector2
 
-# State variables
 var is_jumping := false
 var jump_hold_timer := 0.0
 var was_on_floor := true
 
-# Attack combo state
 var attack_phase := 0
 var combo_timer := 0.0
 var is_attacking := false
 var current_attack_name := ""
 var can_chain_attack := false
 
-# State machine
 enum PlayerState { GROUND, AIR, CROUCH, ATTACK }
 var current_state = PlayerState.GROUND
 
 func _ready():
 	anim_player.animation_finished.connect(_on_animation_finished)
-	
-	# Initialize hitbox positions and disable hitboxes
+
 	for attack_name in hitboxes:
 		var hitbox = hitboxes[attack_name]
 		original_hitbox_positions[attack_name] = hitbox.position
 		hitbox.monitoring = false
 		hitbox.get_node("CollisionShape2D").disabled = true
-	
-	# Simpan posisi asli collision shape tubuh
+
 	if collision_body:
 		original_collision_position = collision_body.position
 
@@ -65,7 +59,7 @@ func _physics_process(delta: float) -> void:
 	process_state_behavior(delta)
 	handle_landing_detection()
 	move_and_slide()
-	update_hitbox_direction()  # Update hitbox position based on facing
+	update_hitbox_direction()
 
 func apply_gravity(delta: float) -> void:
 	if not is_on_floor():
@@ -124,29 +118,15 @@ func process_air_movement() -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 
-# HITBOX DAN COLLISION FLIP SYSTEM =============================================
 func update_hitbox_direction():
-	# Update arah hitbox
 	for attack_name in hitboxes:
 		var hitbox = hitboxes[attack_name]
 		var original_pos = original_hitbox_positions[attack_name]
-		
-		if sprite.flip_h:
-			hitbox.position.x = -original_pos.x
-			hitbox.scale.x = -1
-		else:
-			hitbox.position.x = original_pos.x
-			hitbox.scale.x = 1
-	
-	# Update arah collision shape tubuh
+		hitbox.position.x = -original_pos.x if sprite.flip_h else original_pos.x
+		hitbox.scale.x = -1 if sprite.flip_h else 1
+
 	if collision_body:
-		if sprite.flip_h:
-			# Geser collision shape ke kiri jika sprite menghadap kiri
-			collision_body.position.x = -original_collision_position.x
-		else:
-			# Kembalikan ke posisi semula jika menghadap kanan
-			collision_body.position.x = original_collision_position.x
-# END OF FLIP SYSTEM ===========================================================
+		collision_body.position.x = -original_collision_position.x if sprite.flip_h else original_collision_position.x
 
 func process_jump() -> void:
 	if Input.is_action_just_pressed("jump"):
@@ -184,17 +164,11 @@ func process_attack_input() -> void:
 func start_attack() -> void:
 	is_attacking = true
 	combo_timer = COMBO_RESET_TIME
-
-	if attack_phase < 3:
-		attack_phase += 1
-	else:
-		attack_phase = 1
-
+	attack_phase = attack_phase + 1 if attack_phase < 3 else 1
 	current_attack_name = "Attack-%d" % attack_phase
 	activate_hitbox(current_attack_name)
 	anim_player.play(current_attack_name)
 
-	# Play attack sound based on phase
 	match attack_phase:
 		1, 3:
 			sfx_attack_1.play()
@@ -205,7 +179,7 @@ func activate_hitbox(attack_true: String) -> void:
 	for attack_false in hitboxes:
 		hitboxes[attack_false].monitoring = false
 		hitboxes[attack_false].get_node("CollisionShape2D").disabled = true
-	
+
 	if hitboxes.has(attack_true):
 		hitboxes[attack_true].monitoring = true
 		hitboxes[attack_true].get_node("CollisionShape2D").disabled = false
@@ -259,3 +233,16 @@ func handle_landing_detection() -> void:
 	if not was_on_floor and is_on_floor():
 		sfx_land.play()
 	was_on_floor = is_on_floor()
+
+# === Revisi penting: panggil apply_damage dari parent ===
+func _on_area_attack_1_area_entered(area: Area2D) -> void:
+	if area.is_in_group("enemies") and area.get_parent().has_method("apply_damage"):
+		area.get_parent().apply_damage(10)
+
+func _on_area_attack_2_area_entered(area: Area2D) -> void:
+	if area.is_in_group("enemies") and area.get_parent().has_method("apply_damage"):
+		area.get_parent().apply_damage(15)
+
+func _on_area_attack_3_area_entered(area: Area2D) -> void:
+	if area.is_in_group("enemies") and area.get_parent().has_method("apply_damage"):
+		area.get_parent().apply_damage(20)

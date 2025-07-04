@@ -781,6 +781,8 @@ volume_db = 2.667
 pitch_scale = 1.22
 
 [node name="AreaAttack_1" type="Area2D" parent="CharacterBody2D"]
+collision_layer = 16
+collision_mask = 32
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/AreaAttack_1"]
 position = Vector2(23.5, 9)
@@ -789,6 +791,8 @@ disabled = true
 debug_color = Color(0.975452, 0, 0.419295, 0.42)
 
 [node name="AreaAttack_2" type="Area2D" parent="CharacterBody2D"]
+collision_layer = 16
+collision_mask = 32
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/AreaAttack_2"]
 position = Vector2(28, 7)
@@ -797,6 +801,8 @@ disabled = true
 debug_color = Color(0.98745, 0, 0.312885, 0.42)
 
 [node name="AreaAttack_3" type="Area2D" parent="CharacterBody2D"]
+collision_layer = 16
+collision_mask = 32
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/AreaAttack_3"]
 position = Vector2(33, 9)
@@ -809,3 +815,7 @@ root_node = NodePath("../..")
 libraries = {
 "": SubResource("AnimationLibrary_4pytq")
 }
+
+[connection signal="area_entered" from="CharacterBody2D/AreaAttack_1" to="CharacterBody2D" method="_on_area_attack_1_area_entered"]
+[connection signal="area_entered" from="CharacterBody2D/AreaAttack_2" to="CharacterBody2D" method="_on_area_attack_2_area_entered"]
+[connection signal="area_entered" from="CharacterBody2D/AreaAttack_3" to="CharacterBody2D" method="_on_area_attack_3_area_entered"]

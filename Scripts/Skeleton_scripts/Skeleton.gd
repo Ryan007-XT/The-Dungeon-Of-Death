@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-@export var default_facing_left := false  # Atur dari Inspector untuk arah awal
+@export var default_facing_left := false
 
 var speed = 40
 var gravity = 1000
@@ -11,17 +11,25 @@ var is_attacking = false
 var attack_cooldown = false
 var player_in_hitbox = false
 
+var max_hp := 100
+var current_hp := 100
+
 @onready var animated_sprite = $AnimatedSprite2D
 @onready var hitbox_area = $HitboxArea
 @onready var attack_timer = $Timer
 @onready var raycast = $RayCast2D
 @onready var walk_sfx = $Walk_SFX
 @onready var attack_sfx = $Attack_SFX
+@onready var hp_bar = $EnemyHP/HealthBar
+@onready var dmg_bar = $EnemyHP/DamageBar
+@onready var hp_timer = $EnemyHP/Timer
+
 
 var original_hitbox_transform: Transform2D
 
 func _ready() -> void:
 	add_to_group("enemies")
+	$EnemyHP.visible = false
 
 	speed += randf_range(-10, 10)
 
@@ -36,12 +44,15 @@ func _ready() -> void:
 	animated_sprite.flip_h = default_facing_left
 	adjust_hitbox_transform()
 
+	hp_bar.max_value = max_hp
+	dmg_bar.max_value = max_hp
+	hp_bar.value = current_hp
+	dmg_bar.value = current_hp
+
 func _physics_process(delta):
-	# Terapkan gravitasi
 	velocity.y += gravity * delta
 	adjust_hitbox_transform()
 
-	# Cek frame animasi untuk trigger SFX Attack
 	if is_attacking and animated_sprite.animation == "Attack":
 		var frame = animated_sprite.frame
 		if frame == 4 or frame == 8:
@@ -58,8 +69,12 @@ func _physics_process(delta):
 	else:
 		idle_state()
 
-	# Pindahkan CharacterBody2D
 	move_and_slide()
+
+func _process(delta):
+	if dmg_bar.value > hp_bar.value:
+		dmg_bar.value -= 30 * delta
+		dmg_bar.value = max(dmg_bar.value, hp_bar.value)
 
 func adjust_hitbox_transform():
 	if animated_sprite.flip_h:
@@ -112,7 +127,14 @@ func is_player_visible() -> bool:
 	else:
 		return false
 
-# Signal handlers
+# ===== APPLY DAMAGE FROM PLAYER HITBOX =====
+func apply_damage(amount: int):
+	current_hp = clamp(current_hp - amount, 0, max_hp)
+	hp_bar.value = current_hp
+	hp_timer.start(0.5)
+	$EnemyHP.visible = true
+
+
 func _on_detection_area_body_entered(body: Node2D) -> void:
 	player = body
 	player_chase = true
