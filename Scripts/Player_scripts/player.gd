@@ -21,11 +21,13 @@ const COMBO_RESET_TIME = 0.5
 @onready var hitboxes = {
 	"Attack-1": $AreaAttack_1,
 	"Attack-2": $AreaAttack_2,
-	"Attack-3": $AreaAttack_3
+	"Attack-3": $AreaAttack_3,
+	"Crouch-attack": $AreaAttack_crouch
 }
 
 var original_hitbox_positions = {}
 var original_collision_position: Vector2
+var original_shape_size := Vector2()
 
 var is_jumping := false
 var jump_hold_timer := 0.0
@@ -51,6 +53,8 @@ func _ready():
 
 	if collision_body:
 		original_collision_position = collision_body.position
+		if collision_body.shape is RectangleShape2D:
+			original_shape_size = collision_body.shape.size
 
 func _physics_process(delta: float) -> void:
 	apply_gravity(delta)
@@ -93,6 +97,7 @@ func process_state_behavior(delta: float) -> void:
 			process_attack_input()
 		PlayerState.CROUCH:
 			process_crouch_behavior()
+			process_attack_input()  # ⬅️ memungkinkan crouch attack saat crouch
 		PlayerState.ATTACK:
 			velocity.x = 0
 
@@ -151,15 +156,26 @@ func process_jump_extension(delta: float) -> void:
 
 func process_crouch_behavior() -> void:
 	velocity.x = 0
+
+	if collision_body and collision_body.shape is RectangleShape2D:
+		var shape = collision_body.shape as RectangleShape2D
+		shape.size = Vector2(20, 38)
+
 	if not Input.is_action_pressed("crouch"):
 		current_state = PlayerState.GROUND
+		if collision_body and collision_body.shape is RectangleShape2D:
+			var shape = collision_body.shape as RectangleShape2D
+			shape.size = Vector2(20, 47)
 
 func process_attack_input() -> void:
 	if Input.is_action_just_pressed("attack"):
 		if is_attacking:
 			can_chain_attack = true
 		else:
-			start_attack()
+			if current_state == PlayerState.CROUCH:
+				start_crouch_attack()
+			else:
+				start_attack()
 
 func start_attack() -> void:
 	is_attacking = true
@@ -174,6 +190,14 @@ func start_attack() -> void:
 			sfx_attack_1.play()
 		2:
 			sfx_attack_2.play()
+
+func start_crouch_attack() -> void:
+	is_attacking = true
+	combo_timer = COMBO_RESET_TIME
+	current_attack_name = "Crouch-attack"
+	activate_hitbox("Crouch-attack")
+	anim_player.play("Crouch-attack")
+	sfx_attack_1.play()
 
 func activate_hitbox(attack_true: String) -> void:
 	for attack_false in hitboxes:
@@ -195,7 +219,7 @@ func reset_combo() -> void:
 		hitbox.get_node("CollisionShape2D").disabled = true
 
 func _on_animation_finished(anim_name):
-	if anim_name.begins_with("Attack-"):
+	if anim_name.begins_with("Attack-") or anim_name == "Crouch-attack":
 		if can_chain_attack:
 			can_chain_attack = false
 			start_attack()
@@ -234,7 +258,7 @@ func handle_landing_detection() -> void:
 		sfx_land.play()
 	was_on_floor = is_on_floor()
 
-# === Revisi penting: panggil apply_damage dari parent ===
+# === Damage callbacks ===
 func _on_area_attack_1_area_entered(area: Area2D) -> void:
 	if area.is_in_group("enemies") and area.get_parent().has_method("apply_damage"):
 		area.get_parent().apply_damage(10)
@@ -246,3 +270,7 @@ func _on_area_attack_2_area_entered(area: Area2D) -> void:
 func _on_area_attack_3_area_entered(area: Area2D) -> void:
 	if area.is_in_group("enemies") and area.get_parent().has_method("apply_damage"):
 		area.get_parent().apply_damage(20)
+
+func _on_area_attack_crouch_area_entered(area: Area2D) -> void:
+	if area.is_in_group("enemies") and area.get_parent().has_method("apply_damage"):
+		area.get_parent().apply_damage(12)

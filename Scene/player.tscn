@@ -1,10 +1,11 @@
-[gd_scene load_steps=89 format=3 uid="uid://cmnxm7r8efopp"]
+[gd_scene load_steps=100 format=3 uid="uid://cmnxm7r8efopp"]
 
 [ext_resource type="Texture2D" uid="uid://bxh4pnnl7i0l8" path="res://assets/Character/Knight/Idle.png" id="1_aa5mc"]
 [ext_resource type="Script" path="res://Scripts/Player_scripts/player.gd" id="1_q82ig"]
 [ext_resource type="Texture2D" uid="uid://do7cm8n21oigy" path="res://assets/Character/Knight/Run.png" id="2_eolq7"]
 [ext_resource type="Texture2D" uid="uid://cglw2douq5sca" path="res://assets/Character/Knight/Attacks.png" id="2_fbte3"]
 [ext_resource type="Texture2D" uid="uid://bdjgp1pos5otp" path="res://assets/Character/Knight/crouch_idle.png" id="2_fffqf"]
+[ext_resource type="Texture2D" uid="uid://di5ygyirk2kc" path="res://assets/Character/Knight/crouch_attacks.png" id="3_cc16t"]
 [ext_resource type="Texture2D" uid="uid://oxy6t7elsfde" path="res://assets/Character/Knight/Jump.png" id="3_ud6d8"]
 [ext_resource type="Texture2D" uid="uid://dmw54k608ji2y" path="res://assets/Character/Knight/Slidev2-Sheet.png" id="6_mrjr5"]
 [ext_resource type="AudioStream" uid="uid://bron0g3dhvnll" path="res://assets/Audio/SFX/Footstep/Dirt Run 1.ogg" id="7_0r8gc"]
@@ -89,6 +90,38 @@ region = Rect2(256, 128, 128, 64)
 [sub_resource type="AtlasTexture" id="AtlasTexture_bpeiv"]
 atlas = ExtResource("2_fbte3")
 region = Rect2(384, 128, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ff3ia"]
+atlas = ExtResource("3_cc16t")
+region = Rect2(0, 0, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3eixo"]
+atlas = ExtResource("3_cc16t")
+region = Rect2(128, 0, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d51il"]
+atlas = ExtResource("3_cc16t")
+region = Rect2(0, 64, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gwrfj"]
+atlas = ExtResource("3_cc16t")
+region = Rect2(128, 64, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_greu5"]
+atlas = ExtResource("3_cc16t")
+region = Rect2(0, 128, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5u0r3"]
+atlas = ExtResource("3_cc16t")
+region = Rect2(128, 128, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i4upl"]
+atlas = ExtResource("3_cc16t")
+region = Rect2(0, 192, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6j4mf"]
+atlas = ExtResource("3_cc16t")
+region = Rect2(128, 192, 128, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pnoq8"]
 atlas = ExtResource("2_fffqf")
@@ -334,6 +367,35 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_ff3ia")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3eixo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d51il")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gwrfj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_greu5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5u0r3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i4upl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6j4mf")
+}],
+"loop": true,
+"name": &"Crouch-attack",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_pnoq8")
 }, {
 "duration": 1.0,
@@ -488,13 +550,16 @@ animations = [{
 size = Vector2(20, 47)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8vlwo"]
-size = Vector2(21, 42)
+size = Vector2(25, 42)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mlrgx"]
 size = Vector2(30, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gqm7g"]
 size = Vector2(40, 44)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ejxpc"]
+size = Vector2(27, 34)
 
 [sub_resource type="Animation" id="Animation_a0oow"]
 length = 0.5
@@ -578,6 +643,34 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": ["Attack-3"]
+}
+
+[sub_resource type="Animation" id="Animation_056c6"]
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CharacterBody2D/AnimatedSprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CharacterBody2D/AnimatedSprite2D:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["Crouch-attack"]
 }
 
 [sub_resource type="Animation" id="Animation_phkjh"]
@@ -725,6 +818,7 @@ _data = {
 "Attack-1": SubResource("Animation_a0oow"),
 "Attack-2": SubResource("Animation_bb4j0"),
 "Attack-3": SubResource("Animation_12c6t"),
+"Crouch-attack": SubResource("Animation_056c6"),
 "Crouch-idle": SubResource("Animation_phkjh"),
 "Idle": SubResource("Animation_hxobe"),
 "Jump": SubResource("Animation_xetyr"),
@@ -744,6 +838,7 @@ script = ExtResource("1_q82ig")
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_pakqs")
 animation = &"Attack-1"
+frame_progress = 0.260802
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
 position = Vector2(2, 8.5)
@@ -787,7 +882,7 @@ collision_layer = 16
 collision_mask = 32
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/AreaAttack_1"]
-position = Vector2(23.5, 9)
+position = Vector2(21.5, 9)
 shape = SubResource("RectangleShape2D_8vlwo")
 disabled = true
 debug_color = Color(0.975452, 0, 0.419295, 0.42)
@@ -812,6 +907,16 @@ shape = SubResource("RectangleShape2D_gqm7g")
 disabled = true
 debug_color = Color(0.986931, 0, 0.318428, 0.42)
 
+[node name="AreaAttack_crouch" type="Area2D" parent="CharacterBody2D"]
+collision_layer = 16
+collision_mask = 32
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/AreaAttack_crouch"]
+position = Vector2(18.5, 14)
+shape = SubResource("RectangleShape2D_ejxpc")
+disabled = true
+debug_color = Color(0.977914, 0, 0.400368, 0.42)
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="CharacterBody2D"]
 root_node = NodePath("../..")
 libraries = {
@@ -821,3 +926,4 @@ libraries = {
 [connection signal="area_entered" from="CharacterBody2D/AreaAttack_1" to="CharacterBody2D" method="_on_area_attack_1_area_entered"]
 [connection signal="area_entered" from="CharacterBody2D/AreaAttack_2" to="CharacterBody2D" method="_on_area_attack_2_area_entered"]
 [connection signal="area_entered" from="CharacterBody2D/AreaAttack_3" to="CharacterBody2D" method="_on_area_attack_3_area_entered"]
+[connection signal="area_entered" from="CharacterBody2D/AreaAttack_crouch" to="CharacterBody2D" method="_on_area_attack_crouch_area_entered"]
