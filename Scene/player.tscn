@@ -1,4 +1,4 @@
-[gd_scene load_steps=88 format=3 uid="uid://cmnxm7r8efopp"]
+[gd_scene load_steps=89 format=3 uid="uid://cmnxm7r8efopp"]
 
 [ext_resource type="Texture2D" uid="uid://bxh4pnnl7i0l8" path="res://assets/Character/Knight/Idle.png" id="1_aa5mc"]
 [ext_resource type="Script" path="res://Scripts/Player_scripts/player.gd" id="1_q82ig"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://dmw54k608ji2y" path="res://assets/Character/Knight/Slidev2-Sheet.png" id="6_mrjr5"]
 [ext_resource type="AudioStream" uid="uid://bron0g3dhvnll" path="res://assets/Audio/SFX/Footstep/Dirt Run 1.ogg" id="7_0r8gc"]
 [ext_resource type="AudioStream" uid="uid://b74hmmyk8evqc" path="res://assets/Audio/SFX/Footstep/Dirt Jump.ogg" id="8_hn23s"]
+[ext_resource type="Script" path="res://Scripts/Camera_script/camera_2d.gd" id="8_pdaqh"]
 [ext_resource type="AudioStream" uid="uid://cfwk1akfd0ayu" path="res://assets/Audio/SFX/Footstep/Dirt Land.ogg" id="9_3lnbj"]
 [ext_resource type="AudioStream" uid="uid://cthf7l3wldaxu" path="res://assets/Audio/SFX/Attack/Sword/Sword Attack 1.ogg" id="11_2emix"]
 [ext_resource type="AudioStream" uid="uid://58i7yayuh8ph" path="res://assets/Audio/SFX/Attack/Sword/Sword Attack 2.ogg" id="12_q6nvb"]
@@ -754,6 +755,7 @@ zoom = Vector2(2.2, 2.2)
 position_smoothing_enabled = true
 rotation_smoothing_enabled = true
 editor_draw_limits = true
+script = ExtResource("8_pdaqh")
 
 [node name="Dirt_run_SFX" type="AudioStreamPlayer2D" parent="CharacterBody2D"]
 stream = ExtResource("7_0r8gc")

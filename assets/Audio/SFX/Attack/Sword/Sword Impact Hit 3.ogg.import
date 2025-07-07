@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://pvtpiy3tqhm7"
+path="res://.godot/imported/Sword Impact Hit 3.ogg-1c4d7c396af26d454101abf807aa5ad4.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/Audio/SFX/Attack/Sword/Sword Impact Hit 3.ogg"
+dest_files=["res://.godot/imported/Sword Impact Hit 3.ogg-1c4d7c396af26d454101abf807aa5ad4.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

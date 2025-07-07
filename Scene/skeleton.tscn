@@ -1,10 +1,12 @@
-[gd_scene load_steps=45 format=3 uid="uid://cf3nqp351cq6i"]
+[gd_scene load_steps=63 format=3 uid="uid://cf3nqp351cq6i"]
 
 [ext_resource type="Texture2D" uid="uid://c4gcftjjmc3l7" path="res://assets/Character/Skeleton enemy/Skeleton enemy/Skeleton enemy.png" id="1_2b2y7"]
 [ext_resource type="Script" path="res://Scripts/Skeleton_scripts/Skeleton.gd" id="1_3btpe"]
 [ext_resource type="AudioStream" uid="uid://ga6mfm32p5sc" path="res://assets/Audio/SFX/Footstep/Dirt Chain Walk 3 skeleton.ogg" id="3_lt0eu"]
 [ext_resource type="AudioStream" uid="uid://by57i0jqnc6ge" path="res://assets/Audio/SFX/Attack/Sword/Skeleton chain.ogg" id="4_ytyvk"]
 [ext_resource type="PackedScene" uid="uid://07vliw6btaxs" path="res://Scene/enemy_hp.tscn" id="5_k4fdt"]
+[ext_resource type="AudioStream" uid="uid://pvtpiy3tqhm7" path="res://assets/Audio/SFX/Attack/Sword/Sword Impact Hit 3.ogg" id="5_m4wq0"]
+[ext_resource type="AudioStream" uid="uid://b68uy0jyxn45v" path="res://assets/Audio/SFX/State/skeleton_death.ogg" id="6_0ad3g"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_6d8lk"]
 atlas = ExtResource("1_2b2y7")
@@ -57,6 +59,70 @@ region = Rect2(704, 0, 64, 64)
 [sub_resource type="AtlasTexture" id="AtlasTexture_achb1"]
 atlas = ExtResource("1_2b2y7")
 region = Rect2(768, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eo40h"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(0, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ulmst"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(64, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o38so"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(128, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4lbth"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(192, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rx2fe"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(256, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dq8ry"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(320, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2xotu"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(384, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ljbgo"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(448, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kc6lq"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(512, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bpkhr"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(576, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0bx81"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(640, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a3q74"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(704, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jv8xn"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(768, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ppsc3"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(0, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ct1vl"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(64, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_72lcs"]
+atlas = ExtResource("1_2b2y7")
+region = Rect2(128, 256, 64, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2nxk1"]
 atlas = ExtResource("1_2b2y7")
@@ -167,6 +233,64 @@ animations = [{
 "loop": true,
 "name": &"Attack",
 "speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eo40h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ulmst")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o38so")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4lbth")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rx2fe")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dq8ry")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2xotu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ljbgo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kc6lq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bpkhr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0bx81")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a3q74")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jv8xn")
+}],
+"loop": false,
+"name": &"Death",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ppsc3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ct1vl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_72lcs")
+}],
+"loop": true,
+"name": &"Hit",
+"speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -388,6 +512,7 @@ shape = SubResource("RectangleShape2D_1jl7f")
 debug_color = Color(0.989076, 0, 0.294693, 0.42)
 
 [node name="HurtBox" type="Area2D" parent="." groups=["enemies"]]
+visible = false
 collision_layer = 32
 collision_mask = 16
 monitoring = false
@@ -396,8 +521,6 @@ monitoring = false
 position = Vector2(-1.5, 0)
 shape = SubResource("RectangleShape2D_m7pi2")
 debug_color = Color(0, 0.63975, 0.360132, 0.42)
-
-[node name="Timer" type="Timer" parent="."]
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
 visible = false
@@ -416,6 +539,15 @@ volume_db = -36.872
 pitch_scale = 3.08
 bus = &"skeleton"
 
+[node name="Hit_SFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_m4wq0")
+pitch_scale = 0.85
+
+[node name="Death_SFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6_0ad3g")
+volume_db = -4.0
+pitch_scale = 2.74
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 root_node = NodePath("../..")
 libraries = {
@@ -433,6 +565,9 @@ offset_bottom = -31.776
 grow_horizontal = 1
 grow_vertical = 1
 
+[node name="Timer" type="Timer" parent="."]
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="body_entered" from="DetectionArea" to="." method="_on_detection_area_body_entered"]
 [connection signal="body_exited" from="DetectionArea" to="." method="_on_detection_area_body_exited"]
 [connection signal="body_entered" from="HitboxArea" to="." method="_on_hitbox_area_body_entered"]
