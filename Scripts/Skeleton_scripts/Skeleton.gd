@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 @export var default_facing_left := false
+@export var stun_duration := 0.3  # Durasi stun setelah terkena hit
 
 var speed = 40
 var gravity = 1000
@@ -14,6 +15,9 @@ var player_in_hitbox = false
 var max_hp := 100
 var current_hp := 100
 var is_dead = false
+var is_stunned := false  # Status stun
+var knockback_velocity := Vector2.ZERO  # Velocity untuk knockback
+var knockback_decay := 0.85  # Faktor reduksi knockback
 
 @onready var animated_sprite = $AnimatedSprite2D
 @onready var hitbox_area = $HitboxArea
@@ -55,8 +59,21 @@ func _physics_process(delta):
 	if is_dead:
 		return
 
+	# Terapkan knockback jika ada
+	if knockback_velocity != Vector2.ZERO:
+		velocity = knockback_velocity
+		knockback_velocity *= knockback_decay
+		move_and_slide()
+		if knockback_velocity.length() < 5:
+			knockback_velocity = Vector2.ZERO
+		return
+
 	velocity.y += gravity * delta
 	adjust_hitbox_transform()
+
+	if is_stunned:
+		move_and_slide()
+		return
 
 	if is_attacking and animated_sprite.animation == "Attack":
 		var frame = animated_sprite.frame
@@ -115,7 +132,7 @@ func chase_player():
 
 func idle_state():
 	velocity.x = 0
-	if animated_sprite.animation != "Idle" and !is_attacking:
+	if animated_sprite.animation != "Idle" and !is_attacking and !is_stunned:
 		animated_sprite.play("Idle")
 
 	if walk_sfx.playing:
@@ -135,9 +152,28 @@ func is_player_visible() -> bool:
 	else:
 		return false
 
-# ==================== EFEK HIT ====================
+# ==================== [FITUR BARU] KNOCKBACK & STUN ====================
+func apply_knockback(source_position: Vector2, force: float = 50):
+	var dir = (global_position - source_position).normalized()
+	knockback_velocity = dir * force
 
-func apply_damage(amount: int):
+	is_stunned = true
+	animated_sprite.play("Hit")
+
+	await get_tree().create_timer(stun_duration).timeout
+	is_stunned = false
+
+	if is_dead:
+		return
+	if player_in_hitbox and player != null:
+		start_attack()
+	elif player_chase and player != null:
+		animated_sprite.play("Run")
+	else:
+		animated_sprite.play("Idle")
+
+# ==================== EFEK HIT ====================
+func apply_damage(amount: int, source_position: Vector2):
 	if is_dead:
 		return
 
@@ -146,10 +182,11 @@ func apply_damage(amount: int):
 	hp_timer.start(0.5)
 	$EnemyHP.visible = true
 
-	flash_white()
+	apply_knockback(source_position)
+	await do_hit_stop(0.05)  # <- HIT STOP DI SINI
 
 	if $Hit_SFX:
-		$Hit_SFX.pitch_scale = randf_range(0.8, 0.9) # ✅ Variasi pitch biar tidak membosankan
+		$Hit_SFX.pitch_scale = randf_range(1, 2)
 		$Hit_SFX.play()
 
 	var camera := get_viewport().get_camera_2d()
@@ -159,13 +196,18 @@ func apply_damage(amount: int):
 	if current_hp <= 0:
 		die()
 
+func do_hit_stop(duration := 0.1) -> void:
+	var original_time_scale = Engine.time_scale
+	Engine.time_scale = 0.01
+	await get_tree().create_timer(duration, true, false, true).timeout
+	Engine.time_scale = original_time_scale
+
 func flash_white():
 	animated_sprite.self_modulate = Color(10, 10, 10)
 	var tween := create_tween()
 	tween.tween_property(animated_sprite, "self_modulate", Color(1, 1, 1), 0.2).set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_OUT)
 
 # ==================== KEMATIAN ====================
-
 func die():
 	if is_dead:
 		return
@@ -175,6 +217,7 @@ func die():
 	player_chase = false
 	is_attacking = false
 	player_in_hitbox = false
+	is_stunned = false
 
 	if walk_sfx.playing:
 		walk_sfx.stop()
@@ -197,14 +240,14 @@ func die():
 func _on_animated_sprite_2d_animation_finished():
 	if animated_sprite.animation == "Death":
 		await get_tree().create_timer(0.5).timeout
-
 		var tween = create_tween()
 		tween.tween_property(animated_sprite, "modulate:a", 0.0, 0.5) \
 			 .set_trans(Tween.TRANS_SINE) \
 			 .set_ease(Tween.EASE_OUT)
-
 		await tween.finished
 		queue_free()
+	elif animated_sprite.animation == "Hit" and not is_dead:
+		animated_sprite.play("Idle")
 
 func _on_detection_area_body_entered(body: Node2D) -> void:
 	player = body

@@ -300,16 +300,20 @@ func handle_landing_detection() -> void:
 # === Damage callbacks ===
 func _on_area_attack_1_area_entered(area: Area2D) -> void:
 	if area.is_in_group("enemies") and area.get_parent().has_method("apply_damage"):
-		area.get_parent().apply_damage(10)
+		# Tambahkan parameter source_position (posisi player)
+		area.get_parent().apply_damage(10, global_position)
 
 func _on_area_attack_2_area_entered(area: Area2D) -> void:
 	if area.is_in_group("enemies") and area.get_parent().has_method("apply_damage"):
-		area.get_parent().apply_damage(15)
+		# Tambahkan parameter source_position (posisi player)
+		area.get_parent().apply_damage(15, global_position)
 
 func _on_area_attack_3_area_entered(area: Area2D) -> void:
 	if area.is_in_group("enemies") and area.get_parent().has_method("apply_damage"):
-		area.get_parent().apply_damage(20)
+		# Tambahkan parameter source_position (posisi player)
+		area.get_parent().apply_damage(20, global_position)
 
 func _on_area_attack_crouch_area_entered(area: Area2D) -> void:
 	if area.is_in_group("enemies") and area.get_parent().has_method("apply_damage"):
-		area.get_parent().apply_damage(12)
+		# Tambahkan parameter source_position (posisi player)
+		area.get_parent().apply_damage(12, global_position)
