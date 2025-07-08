@@ -9,6 +9,11 @@ const EXTRA_JUMP_FORCE = -450.0
 const GRAVITY = 1000.0
 const COMBO_RESET_TIME = 0.5
 
+# Default collision shape values
+const DEFAULT_COLLISION_SIZE = Vector2(20, 47)
+const DEFAULT_COLLISION_POSITION = Vector2(2, 8.5)
+const CROUCH_COLLISION_SIZE = Vector2(20, 38)
+
 # Node references
 @onready var anim_player = $"AnimationPlayer"
 @onready var sprite = $AnimatedSprite2D
@@ -26,9 +31,6 @@ const COMBO_RESET_TIME = 0.5
 }
 
 var original_hitbox_positions = {}
-var original_collision_position: Vector2
-var original_shape_size := Vector2()
-
 var is_jumping := false
 var jump_hold_timer := 0.0
 var was_on_floor := true
@@ -52,9 +54,9 @@ func _ready():
 		hitbox.get_node("CollisionShape2D").disabled = true
 
 	if collision_body:
-		original_collision_position = collision_body.position
+		collision_body.position = DEFAULT_COLLISION_POSITION
 		if collision_body.shape is RectangleShape2D:
-			original_shape_size = collision_body.shape.size
+			collision_body.shape.size = DEFAULT_COLLISION_SIZE
 
 func _physics_process(delta: float) -> void:
 	apply_gravity(delta)
@@ -62,6 +64,7 @@ func _physics_process(delta: float) -> void:
 	handle_state_transitions()
 	process_state_behavior(delta)
 	handle_landing_detection()
+	update_collision()
 	move_and_slide()
 	update_hitbox_direction()
 
@@ -97,11 +100,36 @@ func process_state_behavior(delta: float) -> void:
 			process_attack_input()
 		PlayerState.CROUCH:
 			process_crouch_behavior()
-			process_attack_input()  # ⬅️ memungkinkan crouch attack saat crouch
+			process_attack_input()
 		PlayerState.ATTACK:
 			velocity.x = 0
 
 	update_animation_and_sfx()
+
+func update_collision():
+	if current_state == PlayerState.CROUCH:
+		set_collision_crouch()
+	elif current_state == PlayerState.ATTACK:
+		if current_attack_name == "Crouch-attack":
+			set_collision_crouch()
+		else:
+			set_collision_normal()
+	else:
+		set_collision_normal()
+
+	if collision_body:
+		collision_body.position.x = -DEFAULT_COLLISION_POSITION.x if sprite.flip_h else DEFAULT_COLLISION_POSITION.x
+
+func set_collision_normal():
+	if collision_body and collision_body.shape is RectangleShape2D:
+		collision_body.shape.size = DEFAULT_COLLISION_SIZE
+		collision_body.position.y = DEFAULT_COLLISION_POSITION.y
+
+func set_collision_crouch():
+	if collision_body and collision_body.shape is RectangleShape2D:
+		var height_diff = DEFAULT_COLLISION_SIZE.y - CROUCH_COLLISION_SIZE.y
+		collision_body.shape.size = CROUCH_COLLISION_SIZE
+		collision_body.position.y = DEFAULT_COLLISION_POSITION.y + height_diff / 2.0
 
 func process_ground_movement() -> void:
 	var direction = Input.get_axis("run-left", "run-right")
@@ -130,9 +158,6 @@ func update_hitbox_direction():
 		hitbox.position.x = -original_pos.x if sprite.flip_h else original_pos.x
 		hitbox.scale.x = -1 if sprite.flip_h else 1
 
-	if collision_body:
-		collision_body.position.x = -original_collision_position.x if sprite.flip_h else original_collision_position.x
-
 func process_jump() -> void:
 	if Input.is_action_just_pressed("jump"):
 		start_jump()
@@ -156,16 +181,30 @@ func process_jump_extension(delta: float) -> void:
 
 func process_crouch_behavior() -> void:
 	velocity.x = 0
-
-	if collision_body and collision_body.shape is RectangleShape2D:
-		var shape = collision_body.shape as RectangleShape2D
-		shape.size = Vector2(20, 38)
-
-	if not Input.is_action_pressed("crouch"):
+	if not Input.is_action_pressed("crouch") and can_stand_up():
 		current_state = PlayerState.GROUND
-		if collision_body and collision_body.shape is RectangleShape2D:
-			var shape = collision_body.shape as RectangleShape2D
-			shape.size = Vector2(20, 47)
+	else:
+		anim_player.play("Crouch-idle")
+
+func can_stand_up() -> bool:
+	if not collision_body:
+		return true
+
+	var check_shape = RectangleShape2D.new()
+	check_shape.size = DEFAULT_COLLISION_SIZE
+
+	var check_position = global_position
+	check_position.x += -DEFAULT_COLLISION_POSITION.x if sprite.flip_h else DEFAULT_COLLISION_POSITION.x
+	check_position.y += DEFAULT_COLLISION_POSITION.y
+
+	var space_state = get_world_2d().direct_space_state
+	var params = PhysicsShapeQueryParameters2D.new()
+	params.set_shape(check_shape)
+	params.transform = Transform2D(0, check_position)
+	params.collision_mask = collision_mask
+	params.exclude = [self]
+
+	return space_state.collide_shape(params, 1).is_empty()
 
 func process_attack_input() -> void:
 	if Input.is_action_just_pressed("attack"):

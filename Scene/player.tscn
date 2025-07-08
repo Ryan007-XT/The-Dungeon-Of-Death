@@ -838,7 +838,7 @@ script = ExtResource("1_q82ig")
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_pakqs")
 animation = &"Attack-1"
-frame_progress = 0.260802
+frame_progress = 0.0998438
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
 position = Vector2(2, 8.5)
@@ -869,12 +869,12 @@ pitch_scale = 2.03
 
 [node name="Attack_SFX_1" type="AudioStreamPlayer2D" parent="CharacterBody2D"]
 stream = ExtResource("11_2emix")
-volume_db = 1.333
+volume_db = -18.667
 pitch_scale = 1.05
 
 [node name="Attack_SFX_2" type="AudioStreamPlayer2D" parent="CharacterBody2D"]
 stream = ExtResource("12_q6nvb")
-volume_db = 2.667
+volume_db = -25.333
 pitch_scale = 1.22
 
 [node name="AreaAttack_1" type="Area2D" parent="CharacterBody2D"]

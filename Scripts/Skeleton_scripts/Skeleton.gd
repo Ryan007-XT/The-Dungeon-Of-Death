@@ -28,7 +28,7 @@ var is_dead = false
 @onready var collision_shape = $CollisionShape2D
 
 var original_hitbox_transform: Transform2D
-var flash_duration := 0.3 # Durasi transisi kembali ke normal
+var flash_duration := 0.3
 
 func _ready() -> void:
 	add_to_group("enemies")
@@ -54,7 +54,7 @@ func _ready() -> void:
 func _physics_process(delta):
 	if is_dead:
 		return
-		
+
 	velocity.y += gravity * delta
 	adjust_hitbox_transform()
 
@@ -79,7 +79,7 @@ func _physics_process(delta):
 func _process(delta):
 	if is_dead:
 		return
-		
+
 	if dmg_bar.value > hp_bar.value:
 		dmg_bar.value -= 30 * delta
 		dmg_bar.value = max(dmg_bar.value, hp_bar.value)
@@ -140,31 +140,28 @@ func is_player_visible() -> bool:
 func apply_damage(amount: int):
 	if is_dead:
 		return
-		
+
 	current_hp = clamp(current_hp - amount, 0, max_hp)
 	hp_bar.value = current_hp
 	hp_timer.start(0.5)
 	$EnemyHP.visible = true
-	
-	flash_white() # ⬅️ Tambahkan efek putih saat kena hit
-	
+
+	flash_white()
+
 	if $Hit_SFX:
-		$Hit_SFX.pitch_scale = randf_range(0.95, 1.05) # Biar variasi
+		$Hit_SFX.pitch_scale = randf_range(0.8, 0.9) # ✅ Variasi pitch biar tidak membosankan
 		$Hit_SFX.play()
-		
-	# ✅ Trigger getaran kamera ringan saat enemy terkena hit
+
 	var camera := get_viewport().get_camera_2d()
 	if camera and camera.has_method("start_shake"):
-		camera.start_shake(1.5) # Kamu bisa ubah nilainya sesuai feel
-	
+		camera.start_shake(1.5)
+
 	if current_hp <= 0:
 		die()
 
 func flash_white():
-	animated_sprite.self_modulate = Color(10, 10, 10) # Putih terang
-	# Transisi perlahan kembali ke normal
+	animated_sprite.self_modulate = Color(10, 10, 10)
 	var tween := create_tween()
-	
 	tween.tween_property(animated_sprite, "self_modulate", Color(1, 1, 1), 0.2).set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_OUT)
 
 # ==================== KEMATIAN ====================
@@ -172,7 +169,7 @@ func flash_white():
 func die():
 	if is_dead:
 		return
-		
+
 	is_dead = true
 	velocity = Vector2.ZERO
 	player_chase = false
@@ -181,7 +178,7 @@ func die():
 
 	if walk_sfx.playing:
 		walk_sfx.stop()
-	
+
 	if $Death_SFX:
 		$Death_SFX.play()
 
@@ -199,19 +196,15 @@ func die():
 
 func _on_animated_sprite_2d_animation_finished():
 	if animated_sprite.animation == "Death":
-		# Tunggu 0.5 detik dulu (misalnya untuk efek suara atau delay akhir animasi)
 		await get_tree().create_timer(0.5).timeout
 
-		# Transisi fade out
 		var tween = create_tween()
 		tween.tween_property(animated_sprite, "modulate:a", 0.0, 0.5) \
 			 .set_trans(Tween.TRANS_SINE) \
 			 .set_ease(Tween.EASE_OUT)
 
-		# Tunggu transisi selesai lalu hapus node
 		await tween.finished
 		queue_free()
-
 
 func _on_detection_area_body_entered(body: Node2D) -> void:
 	player = body
