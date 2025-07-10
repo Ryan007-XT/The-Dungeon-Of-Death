@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://dan043qkklcq6"]
+
+[ext_resource type="Texture2D" uid="uid://dodsmbi4gqtm8" path="res://assets/UI/DarkRedUISheet.png" id="1_wyguf"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jxepd"]
+atlas = ExtResource("1_wyguf")
+region = Rect2(260, 109, 96, 19)
+
+[node name="HeartGUI" type="Panel"]
+self_modulate = Color(1, 1, 1, 0)
+custom_minimum_size = Vector2(32, 19)
+offset_right = 32.0
+offset_bottom = 19.0
+
+[node name="HeartSprite" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = SubResource("AtlasTexture_jxepd")
+centered = false
+hframes = 3

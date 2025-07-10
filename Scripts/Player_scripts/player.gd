@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-# Constants
+# === CONSTANTS ===
 const SPEED = 150.0
 const AIR_SPEED_MULTIPLIER = 1
 const INITIAL_JUMP_VELOCITY = -230.0
@@ -8,14 +8,12 @@ const MAX_JUMP_HOLD_TIME = 0.5
 const EXTRA_JUMP_FORCE = -450.0
 const GRAVITY = 1000.0
 const COMBO_RESET_TIME = 0.5
-
-# Default collision shape values
 const DEFAULT_COLLISION_SIZE = Vector2(20, 47)
 const DEFAULT_COLLISION_POSITION = Vector2(2, 8.5)
 const CROUCH_COLLISION_SIZE = Vector2(20, 38)
 
-# Node references
-@onready var anim_player = $"AnimationPlayer"
+# === NODE REFERENCES ===
+@onready var anim_player = $AnimationPlayer
 @onready var sprite = $AnimatedSprite2D
 @onready var collision_body = $CollisionShape2D
 @onready var sfx_run = $Dirt_run_SFX
@@ -29,12 +27,19 @@ const CROUCH_COLLISION_SIZE = Vector2(20, 38)
 	"Attack-3": $AreaAttack_3,
 	"Crouch-attack": $AreaAttack_crouch
 }
+@onready var heart_container = $HealthUI/HeartContainer
 
+# === HEALTH SYSTEM ===
+@export var heart_scene: PackedScene
+var max_health: float = 2.0
+var current_health: float = 2.0
+var heart_sprites: Array[Sprite2D] = []
+
+# === STATE & COMBAT ===
 var original_hitbox_positions = {}
 var is_jumping := false
 var jump_hold_timer := 0.0
 var was_on_floor := true
-
 var attack_phase := 0
 var combo_timer := 0.0
 var is_attacking := false
@@ -44,6 +49,7 @@ var can_chain_attack := false
 enum PlayerState { GROUND, AIR, CROUCH, ATTACK }
 var current_state = PlayerState.GROUND
 
+# === READY ===
 func _ready():
 	anim_player.animation_finished.connect(_on_animation_finished)
 
@@ -58,6 +64,10 @@ func _ready():
 		if collision_body.shape is RectangleShape2D:
 			collision_body.shape.size = DEFAULT_COLLISION_SIZE
 
+	spawn_hearts()
+	update_hearts()
+
+# === PHYSICS ===
 func _physics_process(delta: float) -> void:
 	apply_gravity(delta)
 	update_timers(delta)
@@ -68,16 +78,19 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	update_hitbox_direction()
 
+# === GRAVITY ===
 func apply_gravity(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
 
+# === TIMERS ===
 func update_timers(delta: float) -> void:
 	if combo_timer > 0:
 		combo_timer -= delta
 	elif is_attacking:
 		reset_combo()
 
+# === STATE TRANSITIONS ===
 func handle_state_transitions() -> void:
 	if is_attacking:
 		current_state = PlayerState.ATTACK
@@ -88,6 +101,7 @@ func handle_state_transitions() -> void:
 	else:
 		current_state = PlayerState.AIR
 
+# === STATE BEHAVIOR ===
 func process_state_behavior(delta: float) -> void:
 	match current_state:
 		PlayerState.GROUND:
@@ -106,31 +120,7 @@ func process_state_behavior(delta: float) -> void:
 
 	update_animation_and_sfx()
 
-func update_collision():
-	if current_state == PlayerState.CROUCH:
-		set_collision_crouch()
-	elif current_state == PlayerState.ATTACK:
-		if current_attack_name == "Crouch-attack":
-			set_collision_crouch()
-		else:
-			set_collision_normal()
-	else:
-		set_collision_normal()
-
-	if collision_body:
-		collision_body.position.x = -DEFAULT_COLLISION_POSITION.x if sprite.flip_h else DEFAULT_COLLISION_POSITION.x
-
-func set_collision_normal():
-	if collision_body and collision_body.shape is RectangleShape2D:
-		collision_body.shape.size = DEFAULT_COLLISION_SIZE
-		collision_body.position.y = DEFAULT_COLLISION_POSITION.y
-
-func set_collision_crouch():
-	if collision_body and collision_body.shape is RectangleShape2D:
-		var height_diff = DEFAULT_COLLISION_SIZE.y - CROUCH_COLLISION_SIZE.y
-		collision_body.shape.size = CROUCH_COLLISION_SIZE
-		collision_body.position.y = DEFAULT_COLLISION_POSITION.y + height_diff / 2.0
-
+# === MOVEMENT ===
 func process_ground_movement() -> void:
 	var direction = Input.get_axis("run-left", "run-right")
 	if direction != 0:
@@ -158,6 +148,7 @@ func update_hitbox_direction():
 		hitbox.position.x = -original_pos.x if sprite.flip_h else original_pos.x
 		hitbox.scale.x = -1 if sprite.flip_h else 1
 
+# === JUMP ===
 func process_jump() -> void:
 	if Input.is_action_just_pressed("jump"):
 		start_jump()
@@ -179,6 +170,7 @@ func process_jump_extension(delta: float) -> void:
 	else:
 		is_jumping = false
 
+# === CROUCH ===
 func process_crouch_behavior() -> void:
 	velocity.x = 0
 	if not Input.is_action_pressed("crouch") and can_stand_up():
@@ -187,12 +179,8 @@ func process_crouch_behavior() -> void:
 		anim_player.play("Crouch-idle")
 
 func can_stand_up() -> bool:
-	if not collision_body:
-		return true
-
 	var check_shape = RectangleShape2D.new()
 	check_shape.size = DEFAULT_COLLISION_SIZE
-
 	var check_position = global_position
 	check_position.x += -DEFAULT_COLLISION_POSITION.x if sprite.flip_h else DEFAULT_COLLISION_POSITION.x
 	check_position.y += DEFAULT_COLLISION_POSITION.y
@@ -206,6 +194,30 @@ func can_stand_up() -> bool:
 
 	return space_state.collide_shape(params, 1).is_empty()
 
+# === COLLISION ===
+func update_collision():
+	if current_state == PlayerState.CROUCH:
+		set_collision_crouch()
+	elif current_state == PlayerState.ATTACK and current_attack_name == "Crouch-attack":
+		set_collision_crouch()
+	else:
+		set_collision_normal()
+
+	if collision_body:
+		collision_body.position.x = -DEFAULT_COLLISION_POSITION.x if sprite.flip_h else DEFAULT_COLLISION_POSITION.x
+
+func set_collision_normal():
+	if collision_body and collision_body.shape is RectangleShape2D:
+		collision_body.shape.size = DEFAULT_COLLISION_SIZE
+		collision_body.position.y = DEFAULT_COLLISION_POSITION.y
+
+func set_collision_crouch():
+	if collision_body and collision_body.shape is RectangleShape2D:
+		var height_diff = DEFAULT_COLLISION_SIZE.y - CROUCH_COLLISION_SIZE.y
+		collision_body.shape.size = CROUCH_COLLISION_SIZE
+		collision_body.position.y = DEFAULT_COLLISION_POSITION.y + height_diff / 2.0
+
+# === ATTACK ===
 func process_attack_input() -> void:
 	if Input.is_action_just_pressed("attack"):
 		if is_attacking:
@@ -225,37 +237,33 @@ func start_attack() -> void:
 	anim_player.play(current_attack_name)
 
 	match attack_phase:
-		1, 3:
-			sfx_attack_1.play()
-		2:
-			sfx_attack_2.play()
+		1, 3: sfx_attack_1.play()
+		2: sfx_attack_2.play()
 
 func start_crouch_attack() -> void:
 	is_attacking = true
 	combo_timer = COMBO_RESET_TIME
 	current_attack_name = "Crouch-attack"
-	activate_hitbox("Crouch-attack")
+	activate_hitbox(current_attack_name)
 	anim_player.play("Crouch-attack")
 	sfx_attack_1.play()
 
-func activate_hitbox(attack_true: String) -> void:
-	for attack_false in hitboxes:
-		hitboxes[attack_false].monitoring = false
-		hitboxes[attack_false].get_node("CollisionShape2D").disabled = true
-
-	if hitboxes.has(attack_true):
-		hitboxes[attack_true].monitoring = true
-		hitboxes[attack_true].get_node("CollisionShape2D").disabled = false
+func activate_hitbox(name: String) -> void:
+	for n in hitboxes:
+		hitboxes[n].monitoring = false
+		hitboxes[n].get_node("CollisionShape2D").disabled = true
+	if hitboxes.has(name):
+		hitboxes[name].monitoring = true
+		hitboxes[name].get_node("CollisionShape2D").disabled = false
 
 func reset_combo() -> void:
 	is_attacking = false
 	current_attack_name = ""
 	combo_timer = 0.0
 	can_chain_attack = false
-
-	for hitbox in hitboxes.values():
-		hitbox.monitoring = false
-		hitbox.get_node("CollisionShape2D").disabled = true
+	for h in hitboxes.values():
+		h.monitoring = false
+		h.get_node("CollisionShape2D").disabled = true
 
 func _on_animation_finished(anim_name):
 	if anim_name.begins_with("Attack-") or anim_name == "Crouch-attack":
@@ -265,7 +273,72 @@ func _on_animation_finished(anim_name):
 		else:
 			reset_combo()
 
-func update_animation_and_sfx() -> void:
+# === HEALTH SYSTEM ===
+func spawn_hearts():
+	for child in heart_container.get_children():
+		child.queue_free()
+	heart_sprites.clear()
+
+	var count = int(ceil(max_health))
+	for i in count:
+		var heart_panel = heart_scene.instantiate()
+		heart_container.add_child(heart_panel)
+
+		var heart_sprite = heart_panel.get_node("HeartSprite") as Sprite2D
+		if heart_sprite:
+			heart_sprites.append(heart_sprite)
+
+func update_hearts():
+	var health_left = current_health
+	for heart_sprite in heart_sprites:
+		if health_left >= 1.0:
+			heart_sprite.frame = 0
+			health_left -= 1.0
+		elif health_left >= 0.5:
+			heart_sprite.frame = 1
+			health_left -= 0.5
+		else:
+			heart_sprite.frame = 2
+
+func apply_damage_to_player(amount: float):
+	current_health = max(current_health - amount, 0)
+	update_hearts()
+
+func heal_player(amount: float):
+	current_health = min(current_health + amount, max_health)
+	update_hearts()
+
+func add_max_heart(amount: float):
+	max_health += amount
+	current_health = min(current_health + amount, max_health)
+	spawn_hearts()
+	update_hearts()
+
+# === DEBUG INPUT ===
+func _input(event):
+	if event.is_action_pressed("attack"):
+		apply_damage_to_player(0.5)
+	elif event.is_action_pressed("ui_select"):
+		apply_damage_to_player(1.0)
+	elif event.is_action_pressed("ui_cancel"):
+		heal_player(0.5)
+	elif event.is_action_pressed("ui_right"):
+		add_max_heart(1.0)
+
+# === ENEMY CALLBACKS ===
+func _on_area_attack_1_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(10, global_position)
+func _on_area_attack_2_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(15, global_position)
+func _on_area_attack_3_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(20, global_position)
+func _on_area_attack_crouch_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(12, global_position)
+
+# === LANDING ===
+func handle_landing_detection():
+	if not was_on_floor and is_on_floor():
+		sfx_land.play()
+	was_on_floor = is_on_floor()
+
+# === ANIMATION ===
+func update_animation_and_sfx():
 	if is_attacking:
 		sfx_run.stop()
 		return
@@ -291,29 +364,3 @@ func update_animation_and_sfx() -> void:
 				if anim_player.current_animation != "Idle":
 					anim_player.play("Idle")
 				sfx_run.stop()
-
-func handle_landing_detection() -> void:
-	if not was_on_floor and is_on_floor():
-		sfx_land.play()
-	was_on_floor = is_on_floor()
-
-# === Damage callbacks ===
-func _on_area_attack_1_area_entered(area: Area2D) -> void:
-	if area.is_in_group("enemies") and area.get_parent().has_method("apply_damage"):
-		# Tambahkan parameter source_position (posisi player)
-		area.get_parent().apply_damage(10, global_position)
-
-func _on_area_attack_2_area_entered(area: Area2D) -> void:
-	if area.is_in_group("enemies") and area.get_parent().has_method("apply_damage"):
-		# Tambahkan parameter source_position (posisi player)
-		area.get_parent().apply_damage(15, global_position)
-
-func _on_area_attack_3_area_entered(area: Area2D) -> void:
-	if area.is_in_group("enemies") and area.get_parent().has_method("apply_damage"):
-		# Tambahkan parameter source_position (posisi player)
-		area.get_parent().apply_damage(20, global_position)
-
-func _on_area_attack_crouch_area_entered(area: Area2D) -> void:
-	if area.is_in_group("enemies") and area.get_parent().has_method("apply_damage"):
-		# Tambahkan parameter source_position (posisi player)
-		area.get_parent().apply_damage(12, global_position)
