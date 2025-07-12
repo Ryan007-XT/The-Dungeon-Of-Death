@@ -36,6 +36,7 @@ const CROUCH_COLLISION_SIZE = Vector2(20, 38)
 var max_health: float = 2.0
 var current_health: float = 2.0
 var heart_sprites: Array[Sprite2D] = []
+var is_dead: bool = false
 
 # === STATE & COMBAT ===
 var original_hitbox_positions = {}
@@ -75,6 +76,9 @@ func _ready():
 
 # === PHYSICS ===
 func _physics_process(delta: float) -> void:
+	if is_dead:
+		return
+
 	apply_gravity(delta)
 	update_timers(delta)
 	handle_state_transitions()
@@ -313,8 +317,14 @@ func update_hearts():
 			heart_sprite.frame = 2
 
 func apply_damage_to_player(amount: float):
+	if is_dead:
+		return
+
 	current_health = max(current_health - amount, 0)
 	update_hearts()
+
+	if current_health <= 0:
+		die()
 
 func heal_player(amount: float):
 	current_health = min(current_health + amount, max_health)
@@ -325,6 +335,17 @@ func add_max_heart(amount: float):
 	current_health = min(current_health + amount, max_health)
 	spawn_hearts()
 	update_hearts()
+
+func die():
+	is_dead = true
+	velocity = Vector2.ZERO
+	anim_player.play("Death")
+	anim_player.animation_finished.connect(_on_death_animation_finished, CONNECT_ONE_SHOT)
+
+func _on_death_animation_finished(anim_name: String) -> void:
+	if anim_name == "Death":
+		await get_tree().create_timer(0.5).timeout
+		get_tree().change_scene_to_file("res://Scene/death.tscn")
 
 # === ENEMY CALLBACKS ===
 func _on_hit_box_1_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(10, global_position)
@@ -365,3 +386,7 @@ func update_animation_and_sfx():
 				if anim_player.current_animation != "Idle":
 					anim_player.play("Idle")
 				sfx_run.stop()
+
+
+
+	

@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8fldulssql6"]
+
+[ext_resource type="VideoStream" path="res://assets/YOU-DIED-_HD_.ogv" id="1_hs7tr"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
+texture_filter = 1
+clip_contents = true
+layout_mode = 0
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 1250.0
+offset_bottom = 704.0
+scale = Vector2(1.1, 1.1)
+stream = ExtResource("1_hs7tr")
+autoplay = true
+expand = true

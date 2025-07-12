@@ -15,9 +15,16 @@ warnings/check_invalid_track_paths=false
 [application]
 
 config/name="The Dungeon Of Death"
-run/main_scene="res://Scene/tile_map.tscn"
+run/main_scene="res://Scene/debug.tscn"
 config/features=PackedStringArray("4.3", "Mobile")
 config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1366
+window/size/viewport_height=768
+window/size/initial_position_type=0
+window/size/borderless=true
 
 [editor_plugins]
 

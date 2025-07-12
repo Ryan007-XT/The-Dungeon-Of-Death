@@ -1,4 +1,4 @@
-[gd_scene load_steps=107 format=3 uid="uid://cmnxm7r8efopp"]
+[gd_scene load_steps=113 format=3 uid="uid://cmnxm7r8efopp"]
 
 [ext_resource type="Texture2D" uid="uid://bxh4pnnl7i0l8" path="res://assets/Character/Knight/Idle.png" id="1_aa5mc"]
 [ext_resource type="Script" path="res://Scripts/Player_scripts/player.gd" id="1_q82ig"]
@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://kuk05kjwq7nk" path="res://assets/Character/Knight/Death.png" id="6_jo58r"]
 [ext_resource type="Texture2D" uid="uid://dmw54k608ji2y" path="res://assets/Character/Knight/Slidev2-Sheet.png" id="6_mrjr5"]
 [ext_resource type="AudioStream" uid="uid://bron0g3dhvnll" path="res://assets/Audio/SFX/Footstep/Dirt Run 1.ogg" id="7_0r8gc"]
+[ext_resource type="Texture2D" uid="uid://bt23d3kmse7yu" path="res://assets/Character/Knight/Hurt.png" id="7_6tgom"]
 [ext_resource type="AudioStream" uid="uid://b74hmmyk8evqc" path="res://assets/Audio/SFX/Footstep/Dirt Jump.ogg" id="8_hn23s"]
 [ext_resource type="Script" path="res://Scripts/Camera_script/camera_2d.gd" id="8_pdaqh"]
 [ext_resource type="AudioStream" uid="uid://cfwk1akfd0ayu" path="res://assets/Audio/SFX/Footstep/Dirt Land.ogg" id="9_3lnbj"]
@@ -172,6 +173,18 @@ region = Rect2(0, 64, 128, 64)
 [sub_resource type="AtlasTexture" id="AtlasTexture_5d6gi"]
 atlas = ExtResource("6_jo58r")
 region = Rect2(128, 64, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_klp1o"]
+atlas = ExtResource("7_6tgom")
+region = Rect2(0, 0, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ulbxt"]
+atlas = ExtResource("7_6tgom")
+region = Rect2(128, 0, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3gh45"]
+atlas = ExtResource("7_6tgom")
+region = Rect2(0, 64, 128, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_q4sfr"]
 atlas = ExtResource("1_aa5mc")
@@ -454,8 +467,22 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_5d6gi")
 }],
-"loop": true,
+"loop": false,
 "name": &"Death",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_klp1o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ulbxt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3gh45")
+}],
+"loop": true,
+"name": &"Hurt",
 "speed": 10.0
 }, {
 "frames": [{
@@ -739,6 +766,61 @@ tracks/1/keys = {
 "values": ["Crouch-idle"]
 }
 
+[sub_resource type="Animation" id="Animation_xs4yc"]
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CharacterBody2D/AnimatedSprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CharacterBody2D/AnimatedSprite2D:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["Death"]
+}
+
+[sub_resource type="Animation" id="Animation_ejekm"]
+length = 0.3
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CharacterBody2D/AnimatedSprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [0, 1, 2]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CharacterBody2D/AnimatedSprite2D:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["Hurt"]
+}
+
 [sub_resource type="Animation" id="Animation_hxobe"]
 length = 0.8
 loop_mode = 1
@@ -858,6 +940,8 @@ _data = {
 "Attack-3": SubResource("Animation_12c6t"),
 "Crouch-attack": SubResource("Animation_056c6"),
 "Crouch-idle": SubResource("Animation_phkjh"),
+"Death": SubResource("Animation_xs4yc"),
+"Hurt": SubResource("Animation_ejekm"),
 "Idle": SubResource("Animation_hxobe"),
 "Jump": SubResource("Animation_xetyr"),
 "Run": SubResource("Animation_0pe3o"),
@@ -877,7 +961,6 @@ heart_scene = ExtResource("2_wyyrf")
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_pakqs")
 animation = &"Death"
-frame_progress = 0.101708
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
 visible = false
