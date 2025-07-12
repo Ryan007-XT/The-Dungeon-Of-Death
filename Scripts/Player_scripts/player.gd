@@ -16,16 +16,18 @@ const CROUCH_COLLISION_SIZE = Vector2(20, 38)
 @onready var anim_player = $AnimationPlayer
 @onready var sprite = $AnimatedSprite2D
 @onready var collision_body = $CollisionShape2D
+@onready var hurtbox_collision = $HurtBox/CollisionShape2D
+@onready var hurtbox = $HurtBox
 @onready var sfx_run = $Dirt_run_SFX
 @onready var sfx_jump = $Dirt_jump_SFX
 @onready var sfx_land = $Dirt_land_SFX
 @onready var sfx_attack_1 = $Attack_SFX_1
 @onready var sfx_attack_2 = $Attack_SFX_2
 @onready var hitboxes = {
-	"Attack-1": $AreaAttack_1,
-	"Attack-2": $AreaAttack_2,
-	"Attack-3": $AreaAttack_3,
-	"Crouch-attack": $AreaAttack_crouch
+	"Attack-1": $HitBox_1,
+	"Attack-2": $HitBox_2,
+	"Attack-3": $HitBox_3,
+	"Crouch-attack": $HitBox_crouch
 }
 @onready var heart_container = $HealthUI/HeartContainer
 
@@ -63,6 +65,10 @@ func _ready():
 		collision_body.position = DEFAULT_COLLISION_POSITION
 		if collision_body.shape is RectangleShape2D:
 			collision_body.shape.size = DEFAULT_COLLISION_SIZE
+
+	if hurtbox_collision and hurtbox_collision.shape is RectangleShape2D:
+		hurtbox_collision.shape.size = DEFAULT_COLLISION_SIZE
+		hurtbox_collision.position = DEFAULT_COLLISION_POSITION
 
 	spawn_hearts()
 	update_hearts()
@@ -196,26 +202,32 @@ func can_stand_up() -> bool:
 
 # === COLLISION ===
 func update_collision():
-	if current_state == PlayerState.CROUCH:
-		set_collision_crouch()
-	elif current_state == PlayerState.ATTACK and current_attack_name == "Crouch-attack":
+	if current_state == PlayerState.CROUCH or (current_state == PlayerState.ATTACK and current_attack_name == "Crouch-attack"):
 		set_collision_crouch()
 	else:
 		set_collision_normal()
 
 	if collision_body:
 		collision_body.position.x = -DEFAULT_COLLISION_POSITION.x if sprite.flip_h else DEFAULT_COLLISION_POSITION.x
+	if hurtbox_collision:
+		hurtbox_collision.position.x = -DEFAULT_COLLISION_POSITION.x if sprite.flip_h else DEFAULT_COLLISION_POSITION.x
 
 func set_collision_normal():
 	if collision_body and collision_body.shape is RectangleShape2D:
 		collision_body.shape.size = DEFAULT_COLLISION_SIZE
 		collision_body.position.y = DEFAULT_COLLISION_POSITION.y
+	if hurtbox_collision and hurtbox_collision.shape is RectangleShape2D:
+		hurtbox_collision.shape.size = DEFAULT_COLLISION_SIZE
+		hurtbox_collision.position.y = DEFAULT_COLLISION_POSITION.y
 
 func set_collision_crouch():
+	var height_diff = DEFAULT_COLLISION_SIZE.y - CROUCH_COLLISION_SIZE.y
 	if collision_body and collision_body.shape is RectangleShape2D:
-		var height_diff = DEFAULT_COLLISION_SIZE.y - CROUCH_COLLISION_SIZE.y
 		collision_body.shape.size = CROUCH_COLLISION_SIZE
 		collision_body.position.y = DEFAULT_COLLISION_POSITION.y + height_diff / 2.0
+	if hurtbox_collision and hurtbox_collision.shape is RectangleShape2D:
+		hurtbox_collision.shape.size = CROUCH_COLLISION_SIZE
+		hurtbox_collision.position.y = DEFAULT_COLLISION_POSITION.y + height_diff / 2.0
 
 # === ATTACK ===
 func process_attack_input() -> void:
@@ -314,22 +326,11 @@ func add_max_heart(amount: float):
 	spawn_hearts()
 	update_hearts()
 
-# === DEBUG INPUT ===
-func _input(event):
-	if event.is_action_pressed("attack"):
-		apply_damage_to_player(0.5)
-	elif event.is_action_pressed("ui_select"):
-		apply_damage_to_player(1.0)
-	elif event.is_action_pressed("ui_cancel"):
-		heal_player(0.5)
-	elif event.is_action_pressed("ui_right"):
-		add_max_heart(1.0)
-
 # === ENEMY CALLBACKS ===
-func _on_area_attack_1_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(10, global_position)
-func _on_area_attack_2_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(15, global_position)
-func _on_area_attack_3_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(20, global_position)
-func _on_area_attack_crouch_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(12, global_position)
+func _on_hit_box_1_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(10, global_position)
+func _on_hit_box_2_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(15, global_position)
+func _on_hit_box_3_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(20, global_position)
+func _on_hit_box_crouch_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(12, global_position)
 
 # === LANDING ===
 func handle_landing_detection():

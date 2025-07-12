@@ -1,4 +1,4 @@
-[gd_scene load_steps=101 format=3 uid="uid://cmnxm7r8efopp"]
+[gd_scene load_steps=107 format=3 uid="uid://cmnxm7r8efopp"]
 
 [ext_resource type="Texture2D" uid="uid://bxh4pnnl7i0l8" path="res://assets/Character/Knight/Idle.png" id="1_aa5mc"]
 [ext_resource type="Script" path="res://Scripts/Player_scripts/player.gd" id="1_q82ig"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dan043qkklcq6" path="res://Scene/Heart.tscn" id="2_wyyrf"]
 [ext_resource type="Texture2D" uid="uid://di5ygyirk2kc" path="res://assets/Character/Knight/crouch_attacks.png" id="3_cc16t"]
 [ext_resource type="Texture2D" uid="uid://oxy6t7elsfde" path="res://assets/Character/Knight/Jump.png" id="3_ud6d8"]
+[ext_resource type="Texture2D" uid="uid://kuk05kjwq7nk" path="res://assets/Character/Knight/Death.png" id="6_jo58r"]
 [ext_resource type="Texture2D" uid="uid://dmw54k608ji2y" path="res://assets/Character/Knight/Slidev2-Sheet.png" id="6_mrjr5"]
 [ext_resource type="AudioStream" uid="uid://bron0g3dhvnll" path="res://assets/Audio/SFX/Footstep/Dirt Run 1.ogg" id="7_0r8gc"]
 [ext_resource type="AudioStream" uid="uid://b74hmmyk8evqc" path="res://assets/Audio/SFX/Footstep/Dirt Jump.ogg" id="8_hn23s"]
@@ -155,6 +156,22 @@ region = Rect2(0, 192, 128, 64)
 [sub_resource type="AtlasTexture" id="AtlasTexture_biavl"]
 atlas = ExtResource("2_fffqf")
 region = Rect2(128, 192, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3qlt1"]
+atlas = ExtResource("6_jo58r")
+region = Rect2(0, 0, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n8xyu"]
+atlas = ExtResource("6_jo58r")
+region = Rect2(128, 0, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bmuvb"]
+atlas = ExtResource("6_jo58r")
+region = Rect2(0, 64, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5d6gi"]
+atlas = ExtResource("6_jo58r")
+region = Rect2(128, 64, 128, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_q4sfr"]
 atlas = ExtResource("1_aa5mc")
@@ -426,6 +443,23 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_3qlt1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n8xyu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bmuvb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5d6gi")
+}],
+"loop": true,
+"name": &"Death",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_q4sfr")
 }, {
 "duration": 1.0,
@@ -549,6 +583,9 @@ animations = [{
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m04h0"]
 size = Vector2(20, 47)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3jrh3"]
+size = Vector2(21, 47)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8vlwo"]
 size = Vector2(25, 42)
@@ -839,7 +876,8 @@ heart_scene = ExtResource("2_wyyrf")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D"]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_pakqs")
-animation = &"Attack-1"
+animation = &"Death"
+frame_progress = 0.101708
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
 visible = false
@@ -879,45 +917,57 @@ stream = ExtResource("12_q6nvb")
 volume_db = -25.333
 pitch_scale = 1.22
 
-[node name="AreaAttack_1" type="Area2D" parent="CharacterBody2D"]
+[node name="Death_SFX" type="AudioStreamPlayer2D" parent="CharacterBody2D"]
+
+[node name="HurtBox" type="Area2D" parent="CharacterBody2D" groups=["player_hurtbox"]]
+visible = false
+collision_layer = 64
+collision_mask = 128
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/HurtBox"]
+position = Vector2(2.5, 8.5)
+shape = SubResource("RectangleShape2D_3jrh3")
+debug_color = Color(0, 0.63025, 0.474444, 0.42)
+
+[node name="HitBox_1" type="Area2D" parent="CharacterBody2D"]
 visible = false
 collision_layer = 16
 collision_mask = 32
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/AreaAttack_1"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/HitBox_1"]
 position = Vector2(21.5, 9)
 shape = SubResource("RectangleShape2D_8vlwo")
 disabled = true
 debug_color = Color(0.975452, 0, 0.419295, 0.42)
 
-[node name="AreaAttack_2" type="Area2D" parent="CharacterBody2D"]
+[node name="HitBox_2" type="Area2D" parent="CharacterBody2D"]
 visible = false
 collision_layer = 16
 collision_mask = 32
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/AreaAttack_2"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/HitBox_2"]
 position = Vector2(28, 7)
 shape = SubResource("RectangleShape2D_mlrgx")
 disabled = true
 debug_color = Color(0.98745, 0, 0.312885, 0.42)
 
-[node name="AreaAttack_3" type="Area2D" parent="CharacterBody2D"]
+[node name="HitBox_3" type="Area2D" parent="CharacterBody2D"]
 visible = false
 collision_layer = 16
 collision_mask = 32
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/AreaAttack_3"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/HitBox_3"]
 position = Vector2(33, 9)
 shape = SubResource("RectangleShape2D_gqm7g")
 disabled = true
 debug_color = Color(0.986931, 0, 0.318428, 0.42)
 
-[node name="AreaAttack_crouch" type="Area2D" parent="CharacterBody2D"]
+[node name="HitBox_crouch" type="Area2D" parent="CharacterBody2D"]
 visible = false
 collision_layer = 16
 collision_mask = 32
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/AreaAttack_crouch"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/HitBox_crouch"]
 position = Vector2(18.5, 14)
 shape = SubResource("RectangleShape2D_ejxpc")
 disabled = true
@@ -941,7 +991,7 @@ offset_right = 135.0
 offset_bottom = 48.0
 theme_override_constants/separation = -5
 
-[connection signal="area_entered" from="CharacterBody2D/AreaAttack_1" to="CharacterBody2D" method="_on_area_attack_1_area_entered"]
-[connection signal="area_entered" from="CharacterBody2D/AreaAttack_2" to="CharacterBody2D" method="_on_area_attack_2_area_entered"]
-[connection signal="area_entered" from="CharacterBody2D/AreaAttack_3" to="CharacterBody2D" method="_on_area_attack_3_area_entered"]
-[connection signal="area_entered" from="CharacterBody2D/AreaAttack_crouch" to="CharacterBody2D" method="_on_area_attack_crouch_area_entered"]
+[connection signal="area_entered" from="CharacterBody2D/HitBox_1" to="CharacterBody2D" method="_on_hit_box_1_area_entered"]
+[connection signal="area_entered" from="CharacterBody2D/HitBox_2" to="CharacterBody2D" method="_on_hit_box_2_area_entered"]
+[connection signal="area_entered" from="CharacterBody2D/HitBox_3" to="CharacterBody2D" method="_on_hit_box_3_area_entered"]
+[connection signal="area_entered" from="CharacterBody2D/HitBox_crouch" to="CharacterBody2D" method="_on_hit_box_crouch_area_entered"]

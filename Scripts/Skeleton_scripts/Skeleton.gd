@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 @export var default_facing_left := false
-@export var stun_duration := 0.3  # Durasi stun setelah terkena hit
+@export var stun_duration := 0.3
 
 var speed = 40
 var gravity = 1000
@@ -15,12 +15,13 @@ var player_in_hitbox = false
 var max_hp := 100
 var current_hp := 100
 var is_dead = false
-var is_stunned := false  # Status stun
-var knockback_velocity := Vector2.ZERO  # Velocity untuk knockback
-var knockback_decay := 0.85  # Faktor reduksi knockback
+var is_stunned := false
+var knockback_velocity := Vector2.ZERO
+var knockback_decay := 0.85
 
 @onready var animated_sprite = $AnimatedSprite2D
-@onready var hitbox_area = $HitboxArea
+@onready var hitbox_area = $HitBoxArea
+@onready var hitbox = $HitBox
 @onready var attack_timer = $Timer
 @onready var raycast = $RayCast2D
 @onready var walk_sfx = $Walk_SFX
@@ -31,6 +32,7 @@ var knockback_decay := 0.85  # Faktor reduksi knockback
 @onready var detection_area = $DetectionArea
 @onready var collision_shape = $CollisionShape2D
 
+var original_hitbox_area_transform: Transform2D
 var original_hitbox_transform: Transform2D
 var flash_duration := 0.3
 
@@ -43,11 +45,13 @@ func _ready() -> void:
 	attack_timer.wait_time = 1.0
 	attack_timer.one_shot = true
 
-	original_hitbox_transform = hitbox_area.transform
+	original_hitbox_area_transform = hitbox_area.transform
+	original_hitbox_transform = hitbox.transform
 
 	walk_sfx.pitch_scale = randf_range(0.7, 1.0)
 
 	animated_sprite.flip_h = default_facing_left
+	adjust_hitbox_area_transform()
 	adjust_hitbox_transform()
 
 	hp_bar.max_value = max_hp
@@ -59,7 +63,6 @@ func _physics_process(delta):
 	if is_dead:
 		return
 
-	# Terapkan knockback jika ada
 	if knockback_velocity != Vector2.ZERO:
 		velocity = knockback_velocity
 		knockback_velocity *= knockback_decay
@@ -69,6 +72,7 @@ func _physics_process(delta):
 		return
 
 	velocity.y += gravity * delta
+	adjust_hitbox_area_transform()
 	adjust_hitbox_transform()
 
 	if is_stunned:
@@ -81,9 +85,21 @@ func _physics_process(delta):
 			if not attack_sfx.playing:
 				attack_sfx.pitch_scale = randf_range(2.9, 3.2)
 				attack_sfx.play()
+	else:
+		hitbox.monitoring = false
+		hitbox.get_node("CollisionShape2D").disabled = true
 
 	if is_attacking:
-		pass
+		var frame = animated_sprite.frame
+		var shape = hitbox.get_node("CollisionShape2D")
+		if frame == 4 or frame == 8:
+			if shape.disabled:
+				hitbox.monitoring = true
+				shape.disabled = false
+		else:
+			if not shape.disabled:
+				hitbox.monitoring = false
+				shape.disabled = true
 	elif player_in_hitbox and player != null:
 		start_attack()
 	elif player_chase and player != null and is_player_visible():
@@ -101,11 +117,17 @@ func _process(delta):
 		dmg_bar.value -= 30 * delta
 		dmg_bar.value = max(dmg_bar.value, hp_bar.value)
 
+func adjust_hitbox_area_transform():
+	if animated_sprite.flip_h:
+		hitbox_area.transform = Transform2D.FLIP_X * original_hitbox_area_transform
+	else:
+		hitbox_area.transform = original_hitbox_area_transform
+
 func adjust_hitbox_transform():
 	if animated_sprite.flip_h:
-		hitbox_area.transform = Transform2D.FLIP_X * original_hitbox_transform
+		hitbox.transform = Transform2D.FLIP_X * original_hitbox_transform
 	else:
-		hitbox_area.transform = original_hitbox_transform
+		hitbox.transform = original_hitbox_transform
 
 func start_attack():
 	is_attacking = true
@@ -152,7 +174,6 @@ func is_player_visible() -> bool:
 	else:
 		return false
 
-# ==================== [FITUR BARU] KNOCKBACK & STUN ====================
 func apply_knockback(source_position: Vector2, force: float = 50):
 	var dir = (global_position - source_position).normalized()
 	knockback_velocity = dir * force
@@ -172,7 +193,6 @@ func apply_knockback(source_position: Vector2, force: float = 50):
 	else:
 		animated_sprite.play("Idle")
 
-# ==================== EFEK HIT ====================
 func apply_damage(amount: int, source_position: Vector2):
 	if is_dead:
 		return
@@ -183,7 +203,7 @@ func apply_damage(amount: int, source_position: Vector2):
 	$EnemyHP.visible = true
 
 	apply_knockback(source_position)
-	await do_hit_stop(0.05)  # <- HIT STOP DI SINI
+	await do_hit_stop(0.05)
 
 	if $Hit_SFX:
 		$Hit_SFX.pitch_scale = randf_range(1, 2)
@@ -207,7 +227,6 @@ func flash_white():
 	var tween := create_tween()
 	tween.tween_property(animated_sprite, "self_modulate", Color(1, 1, 1), 0.2).set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_OUT)
 
-# ==================== KEMATIAN ====================
 func die():
 	if is_dead:
 		return
@@ -271,3 +290,9 @@ func _on_timer_timeout() -> void:
 
 	if player_in_hitbox and player != null:
 		start_attack()
+		
+func _on_hit_box_area_entered(area: Area2D) -> void:
+	if area.is_in_group("player_hurtbox"):
+		var player_node = area.get_parent()
+		if player_node.has_method("apply_damage_to_player"):
+			player_node.apply_damage_to_player(0.5)
