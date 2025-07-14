@@ -1,4 +1,4 @@
-[gd_scene load_steps=113 format=3 uid="uid://cmnxm7r8efopp"]
+[gd_scene load_steps=114 format=3 uid="uid://cmnxm7r8efopp"]
 
 [ext_resource type="Texture2D" uid="uid://bxh4pnnl7i0l8" path="res://assets/Character/Knight/Idle.png" id="1_aa5mc"]
 [ext_resource type="Script" path="res://Scripts/Player_scripts/player.gd" id="1_q82ig"]
@@ -17,6 +17,7 @@
 [ext_resource type="AudioStream" uid="uid://cfwk1akfd0ayu" path="res://assets/Audio/SFX/Footstep/Dirt Land.ogg" id="9_3lnbj"]
 [ext_resource type="AudioStream" uid="uid://cthf7l3wldaxu" path="res://assets/Audio/SFX/Attack/Sword/Sword Attack 1.ogg" id="11_2emix"]
 [ext_resource type="AudioStream" uid="uid://58i7yayuh8ph" path="res://assets/Audio/SFX/Attack/Sword/Sword Attack 2.ogg" id="12_q6nvb"]
+[ext_resource type="VideoStream" path="res://assets/YOU-DIED-_HD_.ogv" id="18_drcms"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_o15yj"]
 atlas = ExtResource("2_fbte3")
@@ -1073,6 +1074,14 @@ offset_top = 16.0
 offset_right = 135.0
 offset_bottom = 48.0
 theme_override_constants/separation = -5
+
+[node name="DeathScene" type="VideoStreamPlayer" parent="CharacterBody2D"]
+offset_left = -342.0
+offset_top = -210.0
+offset_right = 336.0
+offset_bottom = 216.0
+stream = ExtResource("18_drcms")
+expand = true
 
 [connection signal="area_entered" from="CharacterBody2D/HitBox_1" to="CharacterBody2D" method="_on_hit_box_1_area_entered"]
 [connection signal="area_entered" from="CharacterBody2D/HitBox_2" to="CharacterBody2D" method="_on_hit_box_2_area_entered"]

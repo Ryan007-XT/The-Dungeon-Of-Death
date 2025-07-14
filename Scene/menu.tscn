@@ -1,0 +1,64 @@
+[gd_scene load_steps=5 format=3 uid="uid://dcvqq0turcf52"]
+
+[ext_resource type="Texture2D" uid="uid://dx33ygrprbvmh" path="res://assets/UI/BlackGreyUISheet.png" id="1_o3l3y"]
+[ext_resource type="Script" path="res://Scripts/game_script/menu.gd" id="1_x25ic"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cwu1c"]
+atlas = ExtResource("1_o3l3y")
+region = Rect2(243, 72, 50, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lnd8i"]
+atlas = ExtResource("1_o3l3y")
+region = Rect2(244, 72, 48, 14)
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = 1.0
+offset_right = 18.0
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_x25ic")
+
+[node name="Button" type="Button" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 537.0
+offset_top = 201.0
+offset_right = 595.0
+offset_bottom = 223.0
+scale = Vector2(5, 5)
+icon = SubResource("AtlasTexture_cwu1c")
+
+[node name="Label" type="Label" parent="Button"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 20.2
+offset_top = 4.0
+offset_right = 57.2
+offset_bottom = 27.0
+scale = Vector2(0.5, 0.5)
+text = "start"
+
+[node name="Button2" type="Button" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 540.0
+offset_top = 340.0
+offset_right = 596.0
+offset_bottom = 362.0
+scale = Vector2(5, 5)
+icon = SubResource("AtlasTexture_lnd8i")
+
+[node name="Label" type="Label" parent="Button2"]
+layout_mode = 0
+offset_left = 20.8
+offset_top = 4.20001
+offset_right = 49.8
+offset_bottom = 27.2
+scale = Vector2(0.5, 0.5)
+text = "exit"

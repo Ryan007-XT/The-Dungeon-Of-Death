@@ -344,8 +344,11 @@ func die():
 
 func _on_death_animation_finished(anim_name: String) -> void:
 	if anim_name == "Death":
-		await get_tree().create_timer(0.5).timeout
-		get_tree().change_scene_to_file("res://Scene/death.tscn")
+		await get_tree().create_timer(0.5).timeout  # jeda opsional
+		$DeathScene.play()  # mainkan video
+		await $DeathScene.finished  # tunggu sampai video selesai
+		get_tree().change_scene_to_file("res://Scene/menu.tscn")
+
 
 # === ENEMY CALLBACKS ===
 func _on_hit_box_1_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(10, global_position)
