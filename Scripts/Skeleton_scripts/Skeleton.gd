@@ -34,7 +34,6 @@ var knockback_decay := 0.85
 
 var original_hitbox_area_transform: Transform2D
 var original_hitbox_transform: Transform2D
-var flash_duration := 0.3
 
 func _ready() -> void:
 	add_to_group("enemies")
@@ -203,7 +202,6 @@ func apply_damage(amount: int, source_position: Vector2):
 	$EnemyHP.visible = true
 
 	apply_knockback(source_position)
-	await do_hit_stop(0.05)
 
 	if $Hit_SFX:
 		$Hit_SFX.pitch_scale = randf_range(1, 2)
@@ -215,17 +213,6 @@ func apply_damage(amount: int, source_position: Vector2):
 
 	if current_hp <= 0:
 		die()
-
-func do_hit_stop(duration := 0.1) -> void:
-	var original_time_scale = Engine.time_scale
-	Engine.time_scale = 0.01
-	await get_tree().create_timer(duration, true, false, true).timeout
-	Engine.time_scale = original_time_scale
-
-func flash_white():
-	animated_sprite.self_modulate = Color(10, 10, 10)
-	var tween := create_tween()
-	tween.tween_property(animated_sprite, "self_modulate", Color(1, 1, 1), 0.2).set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_OUT)
 
 func die():
 	if is_dead:
