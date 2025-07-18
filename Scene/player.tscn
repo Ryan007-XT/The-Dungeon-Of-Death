@@ -1,4 +1,4 @@
-[gd_scene load_steps=114 format=3 uid="uid://cmnxm7r8efopp"]
+[gd_scene load_steps=115 format=3 uid="uid://cmnxm7r8efopp"]
 
 [ext_resource type="Texture2D" uid="uid://bxh4pnnl7i0l8" path="res://assets/Character/Knight/Idle.png" id="1_aa5mc"]
 [ext_resource type="Script" path="res://Scripts/Player_scripts/player.gd" id="1_q82ig"]
@@ -17,6 +17,7 @@
 [ext_resource type="AudioStream" uid="uid://cfwk1akfd0ayu" path="res://assets/Audio/SFX/Footstep/Dirt Land.ogg" id="9_3lnbj"]
 [ext_resource type="AudioStream" uid="uid://cthf7l3wldaxu" path="res://assets/Audio/SFX/Attack/Sword/Sword Attack 1.ogg" id="11_2emix"]
 [ext_resource type="AudioStream" uid="uid://58i7yayuh8ph" path="res://assets/Audio/SFX/Attack/Sword/Sword Attack 2.ogg" id="12_q6nvb"]
+[ext_resource type="AudioStream" uid="uid://pvtpiy3tqhm7" path="res://assets/Audio/SFX/Attack/Sword/Sword Impact Hit 3.ogg" id="13_jqcg8"]
 [ext_resource type="VideoStream" path="res://assets/YOU-DIED-_HD_.ogv" id="18_drcms"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_o15yj"]
@@ -484,7 +485,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"Hurt",
-"speed": 10.0
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -795,7 +796,7 @@ tracks/1/keys = {
 }
 
 [sub_resource type="Animation" id="Animation_ejekm"]
-length = 0.3
+length = 0.375
 loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -804,7 +805,7 @@ tracks/0/path = NodePath("CharacterBody2D/AnimatedSprite2D:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2),
+"times": PackedFloat32Array(0, 0.125, 0.25),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
 "values": [0, 1, 2]
@@ -961,7 +962,8 @@ heart_scene = ExtResource("2_wyyrf")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D"]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_pakqs")
-animation = &"Death"
+animation = &"Attack-1"
+frame_progress = 0.129219
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
 visible = false
@@ -975,6 +977,9 @@ position_smoothing_enabled = true
 rotation_smoothing_enabled = true
 editor_draw_limits = true
 script = ExtResource("8_pdaqh")
+
+[node name="Hurt_SFX" type="AudioStreamPlayer2D" parent="CharacterBody2D"]
+stream = ExtResource("13_jqcg8")
 
 [node name="Dirt_run_SFX" type="AudioStreamPlayer2D" parent="CharacterBody2D"]
 stream = ExtResource("7_0r8gc")

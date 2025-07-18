@@ -282,4 +282,5 @@ func _on_hit_box_area_entered(area: Area2D) -> void:
 	if area.is_in_group("player_hurtbox"):
 		var player_node = area.get_parent()
 		if player_node.has_method("apply_damage_to_player"):
-			player_node.apply_damage_to_player(0.5)
+			# Fixed: Added source position (global_position) as second argument
+			player_node.apply_damage_to_player(0.5, global_position)

@@ -11,6 +11,8 @@ const COMBO_RESET_TIME = 0.5
 const DEFAULT_COLLISION_SIZE = Vector2(20, 47)
 const DEFAULT_COLLISION_POSITION = Vector2(2, 8.5)
 const CROUCH_COLLISION_SIZE = Vector2(20, 38)
+const KNOCKBACK_FORCE = 250  # Added knockback force
+const STUN_DURATION = 0.2     # Added stun duration
 
 # === NODE REFERENCES ===
 @onready var anim_player = $AnimationPlayer
@@ -23,6 +25,7 @@ const CROUCH_COLLISION_SIZE = Vector2(20, 38)
 @onready var sfx_land = $Dirt_land_SFX
 @onready var sfx_attack_1 = $Attack_SFX_1
 @onready var sfx_attack_2 = $Attack_SFX_2
+@onready var sfx_hurt = $Hurt_SFX       # Added hurt SFX
 @onready var hitboxes = {
 	"Attack-1": $HitBox_1,
 	"Attack-2": $HitBox_2,
@@ -33,8 +36,8 @@ const CROUCH_COLLISION_SIZE = Vector2(20, 38)
 
 # === HEALTH SYSTEM ===
 @export var heart_scene: PackedScene
-var max_health: float = 2.0
-var current_health: float = 2.0
+var max_health: float = 10
+var current_health: float = 10
 var heart_sprites: Array[Sprite2D] = []
 var is_dead: bool = false
 
@@ -48,13 +51,17 @@ var combo_timer := 0.0
 var is_attacking := false
 var current_attack_name := ""
 var can_chain_attack := false
+var is_hurt := false            # Added hurt state
+var stun_timer := 0.0           # Added stun timer
+var knockback_direction := Vector2.ZERO  # Added knockback direction
 
-enum PlayerState { GROUND, AIR, CROUCH, ATTACK }
+enum PlayerState { GROUND, AIR, CROUCH, ATTACK, HURT }  # Added HURT state
 var current_state = PlayerState.GROUND
 
 # === READY ===
 func _ready():
 	anim_player.animation_finished.connect(_on_animation_finished)
+	hurtbox.area_entered.connect(_on_hurt_box_area_entered)  # Connect hurtbox signal
 
 	for attack_name in hitboxes:
 		var hitbox = hitboxes[attack_name]
@@ -79,6 +86,13 @@ func _physics_process(delta: float) -> void:
 	if is_dead:
 		return
 
+	# Update stun timer
+	if is_hurt:
+		stun_timer -= delta
+		if stun_timer <= 0:
+			is_hurt = false
+			current_state = PlayerState.GROUND if is_on_floor() else PlayerState.AIR
+
 	apply_gravity(delta)
 	update_timers(delta)
 	handle_state_transitions()
@@ -102,7 +116,9 @@ func update_timers(delta: float) -> void:
 
 # === STATE TRANSITIONS ===
 func handle_state_transitions() -> void:
-	if is_attacking:
+	if is_hurt:  # Hurt state has priority
+		current_state = PlayerState.HURT
+	elif is_attacking:
 		current_state = PlayerState.ATTACK
 	elif is_on_floor() and Input.is_action_pressed("crouch"):
 		current_state = PlayerState.CROUCH
@@ -127,11 +143,22 @@ func process_state_behavior(delta: float) -> void:
 			process_attack_input()
 		PlayerState.ATTACK:
 			velocity.x = 0
+		PlayerState.HURT:  # Added hurt state behavior
+			process_hurt_state()
 
 	update_animation_and_sfx()
 
+# === HURT STATE HANDLING ===
+func process_hurt_state():
+	# Apply knockback
+	velocity = knockback_direction * KNOCKBACK_FORCE
+	# Prevent movement input during stun
+	velocity.x = move_toward(velocity.x, 0, SPEED)
+
 # === MOVEMENT ===
 func process_ground_movement() -> void:
+	if is_hurt: return  # Skip movement when hurt
+	
 	var direction = Input.get_axis("run-left", "run-right")
 	if direction != 0:
 		velocity.x = direction * SPEED
@@ -142,6 +169,8 @@ func process_ground_movement() -> void:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 
 func process_air_movement() -> void:
+	if is_hurt: return  # Skip movement when hurt
+	
 	var direction = Input.get_axis("run-left", "run-right")
 	if direction != 0:
 		velocity.x = direction * SPEED * AIR_SPEED_MULTIPLIER
@@ -160,6 +189,7 @@ func update_hitbox_direction():
 
 # === JUMP ===
 func process_jump() -> void:
+	if is_hurt: return  # Prevent jumping when hurt
 	if Input.is_action_just_pressed("jump"):
 		start_jump()
 
@@ -171,6 +201,7 @@ func start_jump() -> void:
 	sfx_jump.play()
 
 func process_jump_extension(delta: float) -> void:
+	if is_hurt: return  # Prevent jump extension when hurt
 	if is_jumping and Input.is_action_pressed("jump") and not is_on_ceiling():
 		jump_hold_timer += delta
 		if jump_hold_timer < MAX_JUMP_HOLD_TIME:
@@ -182,6 +213,8 @@ func process_jump_extension(delta: float) -> void:
 
 # === CROUCH ===
 func process_crouch_behavior() -> void:
+	if is_hurt: return  # Prevent crouching when hurt
+	
 	velocity.x = 0
 	if not Input.is_action_pressed("crouch") and can_stand_up():
 		current_state = PlayerState.GROUND
@@ -235,6 +268,7 @@ func set_collision_crouch():
 
 # === ATTACK ===
 func process_attack_input() -> void:
+	if is_hurt: return  # Prevent attacking when hurt
 	if Input.is_action_just_pressed("attack"):
 		if is_attacking:
 			can_chain_attack = true
@@ -282,6 +316,11 @@ func reset_combo() -> void:
 		h.get_node("CollisionShape2D").disabled = true
 
 func _on_animation_finished(anim_name):
+	if anim_name == "Hurt":  # Handle hurt animation finish
+		is_hurt = false
+		current_state = PlayerState.GROUND if is_on_floor() else PlayerState.AIR
+		return
+		
 	if anim_name.begins_with("Attack-") or anim_name == "Crouch-attack":
 		if can_chain_attack:
 			can_chain_attack = false
@@ -316,8 +355,9 @@ func update_hearts():
 		else:
 			heart_sprite.frame = 2
 
-func apply_damage_to_player(amount: float):
-	if is_dead:
+# MODIFIED: Now takes damage source for knockback direction
+func apply_damage_to_player(amount: float, source_position: Vector2):
+	if is_dead or is_hurt:
 		return
 
 	current_health = max(current_health - amount, 0)
@@ -325,6 +365,29 @@ func apply_damage_to_player(amount: float):
 
 	if current_health <= 0:
 		die()
+	else:
+		# Trigger hurt reaction
+		trigger_hurt_reaction(source_position)
+
+# FIXED: Handle hurt reaction with proper knockback direction
+func trigger_hurt_reaction(source_position: Vector2):
+	is_hurt = true
+	current_state = PlayerState.HURT
+	stun_timer = STUN_DURATION
+
+	var horizontal_direction = 1 if source_position.x < global_position.x else -1
+
+	# Atur proporsi knockback
+	var horizontal_strength = 0.8    # makin besar makin jauh ke samping
+	var vertical_strength = -0.1    # negatif = ke atas
+	knockback_direction = Vector2(horizontal_direction * horizontal_strength, vertical_strength)
+
+	anim_player.play("Hurt")
+	sfx_hurt.play()
+
+	if is_attacking:
+		reset_combo()
+
 
 func heal_player(amount: float):
 	current_health = min(current_health + amount, max_health)
@@ -351,10 +414,29 @@ func _on_death_animation_finished(anim_name: String) -> void:
 
 
 # === ENEMY CALLBACKS ===
-func _on_hit_box_1_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(10, global_position)
-func _on_hit_box_2_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(15, global_position)
-func _on_hit_box_3_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(20, global_position)
-func _on_hit_box_crouch_area_entered(area: Area2D): if area.is_in_group("enemies"): area.get_parent().apply_damage(12, global_position)
+func _on_hit_box_1_area_entered(area: Area2D): 
+	if area.is_in_group("enemies"): 
+		area.get_parent().apply_damage(10, global_position)
+		
+func _on_hit_box_2_area_entered(area: Area2D): 
+	if area.is_in_group("enemies"): 
+		area.get_parent().apply_damage(15, global_position)
+		
+func _on_hit_box_3_area_entered(area: Area2D): 
+	if area.is_in_group("enemies"): 
+		area.get_parent().apply_damage(20, global_position)
+		
+func _on_hit_box_crouch_area_entered(area: Area2D): 
+	if area.is_in_group("enemies"): 
+		area.get_parent().apply_damage(12, global_position)
+
+# NEW: Hurtbox damage handling
+func _on_hurt_box_area_entered(area: Area2D):
+	if area.is_in_group("enemy_attack"):
+		# Get damage and source position from the attack area
+		var damage_amount = area.damage
+		var source_pos = area.global_position
+		apply_damage_to_player(damage_amount, source_pos)
 
 # === LANDING ===
 func handle_landing_detection():
@@ -364,6 +446,9 @@ func handle_landing_detection():
 
 # === ANIMATION ===
 func update_animation_and_sfx():
+	if is_hurt:  # Skip other animations when hurt
+		return
+		
 	if is_attacking:
 		sfx_run.stop()
 		return
@@ -389,7 +474,3 @@ func update_animation_and_sfx():
 				if anim_player.current_animation != "Idle":
 					anim_player.play("Idle")
 				sfx_run.stop()
-
-
-
-	
