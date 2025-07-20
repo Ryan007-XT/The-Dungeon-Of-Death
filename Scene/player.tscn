@@ -959,6 +959,15 @@ collision_mask = 9
 script = ExtResource("1_q82ig")
 heart_scene = ExtResource("2_wyyrf")
 
+[node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
+zoom = Vector2(2.2, 2.2)
+limit_left = 1
+limit_bottom = 775
+limit_smoothed = true
+position_smoothing_enabled = true
+editor_draw_limits = true
+script = ExtResource("8_pdaqh")
+
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D"]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_pakqs")
@@ -1079,17 +1088,6 @@ offset_right = 336.0
 offset_bottom = 216.0
 stream = ExtResource("18_drcms")
 expand = true
-
-[node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
-offset = Vector2(0, -25)
-zoom = Vector2(2.2, 2.2)
-limit_left = 1
-limit_bottom = 775
-limit_smoothed = true
-position_smoothing_enabled = true
-rotation_smoothing_enabled = true
-editor_draw_limits = true
-script = ExtResource("8_pdaqh")
 
 [connection signal="area_entered" from="CharacterBody2D/HitBox_1" to="CharacterBody2D" method="_on_hit_box_1_area_entered"]
 [connection signal="area_entered" from="CharacterBody2D/HitBox_2" to="CharacterBody2D" method="_on_hit_box_2_area_entered"]

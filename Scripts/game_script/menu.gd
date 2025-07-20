@@ -1,8 +1,9 @@
 extends Control
 
 func _ready():
-	$Button.pressed.connect(_on_start_pressed)
-	$Button2.pressed.connect(_on_exit_pressed)
+	$VBoxContainer/Button.pressed.connect(_on_start_pressed)
+	$VBoxContainer/Button2.pressed.connect(_on_exit_pressed)
+	$AnimatedSprite2D.play("default")
 
 func _on_start_pressed():
 	get_tree().change_scene_to_file("res://Scene/debug.tscn")

@@ -985,7 +985,7 @@ texture_filter = 1
 [node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer5"]
 
 [node name="Node2D_Player" parent="." instance=ExtResource("2_ca5dn")]
-position = Vector2(296, 648)
+position = Vector2(304, 576)
 
 [node name="CharacterBody2D" parent="." instance=ExtResource("4_y6kss")]
 position = Vector2(1040, 656)

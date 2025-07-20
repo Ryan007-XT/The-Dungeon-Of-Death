@@ -1,64 +1,239 @@
-[gd_scene load_steps=5 format=3 uid="uid://dcvqq0turcf52"]
+[gd_scene load_steps=33 format=3 uid="uid://dcvqq0turcf52"]
 
-[ext_resource type="Texture2D" uid="uid://dx33ygrprbvmh" path="res://assets/UI/BlackGreyUISheet.png" id="1_o3l3y"]
 [ext_resource type="Script" path="res://Scripts/game_script/menu.gd" id="1_x25ic"]
+[ext_resource type="FontFile" uid="uid://dfibgbboeyyka" path="res://assets/UI/Font/PixelWarden.ttf" id="2_3ovdx"]
+[ext_resource type="Texture2D" uid="uid://v7ollka147el" path="res://assets/Environment/PixelFantasy_Caves_1.0/background1.png" id="2_sc556"]
+[ext_resource type="Texture2D" uid="uid://weodcvj45mq8" path="res://assets/Environment/PixelFantasy_Caves_1.0/background2.png" id="3_85kmc"]
+[ext_resource type="Texture2D" uid="uid://60c332jfqwub" path="res://assets/Character/Knight/Pray.png" id="3_jx8wt"]
+[ext_resource type="Texture2D" uid="uid://dndlkx8f8dqfa" path="res://assets/Environment/PixelFantasy_Caves_1.0/background3.png" id="4_fpax6"]
+[ext_resource type="Texture2D" uid="uid://dq12gbksae5vt" path="res://assets/Environment/PixelFantasy_Caves_1.0/background4a.png" id="5_x64tp"]
+[ext_resource type="Texture2D" uid="uid://dqd1ljo05qaxr" path="res://assets/Environment/PixelFantasy_Caves_1.0/mainlev_build.png" id="6_3psv7"]
+[ext_resource type="Texture2D" uid="uid://cbuq7thpxia1u" path="res://assets/Environment/PixelFantasy_Caves_1.0/props1.png" id="7_p0n3p"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_cwu1c"]
-atlas = ExtResource("1_o3l3y")
-region = Rect2(243, 72, 50, 14)
+[sub_resource type="AtlasTexture" id="AtlasTexture_vcs33"]
+atlas = ExtResource("6_3psv7")
+region = Rect2(619, 240, 53, 32)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_lnd8i"]
-atlas = ExtResource("1_o3l3y")
-region = Rect2(244, 72, 48, 14)
+[sub_resource type="AtlasTexture" id="AtlasTexture_c8ivk"]
+atlas = ExtResource("7_p0n3p")
+region = Rect2(176, 99, 160, 61)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_bqs0y"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jg70c"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_axm8q"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3d3ac"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3f13q"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1dks6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_s7sv6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dt2lq"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6cebv"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q36og"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_cn8to"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rdhhx"]
+atlas = ExtResource("3_jx8wt")
+region = Rect2(256, 0, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2f7nu"]
+atlas = ExtResource("3_jx8wt")
+region = Rect2(384, 0, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0le6j"]
+atlas = ExtResource("3_jx8wt")
+region = Rect2(0, 64, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7jiot"]
+atlas = ExtResource("3_jx8wt")
+region = Rect2(128, 64, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f18ad"]
+atlas = ExtResource("3_jx8wt")
+region = Rect2(256, 64, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q7or8"]
+atlas = ExtResource("3_jx8wt")
+region = Rect2(384, 64, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y274b"]
+atlas = ExtResource("3_jx8wt")
+region = Rect2(0, 128, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_colwe"]
+atlas = ExtResource("3_jx8wt")
+region = Rect2(128, 128, 128, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vublk"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rdhhx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2f7nu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0le6j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7jiot")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f18ad")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q7or8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y274b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_colwe")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[sub_resource type="LabelSettings" id="LabelSettings_tf6wc"]
+font = ExtResource("2_3ovdx")
+font_size = 80
+font_color = Color(1, 1, 1, 0.929412)
+outline_size = 1
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_color = Color(0.319255, 0.319255, 0.319255, 1)
 
 [node name="Control" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 18.0
-offset_top = 1.0
-offset_right = 18.0
-offset_bottom = 1.0
+offset_left = 2.0
+offset_top = 5.0
+offset_right = 2.0
+offset_bottom = 5.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_x25ic")
 
-[node name="Button" type="Button" parent="."]
-texture_filter = 1
-layout_mode = 0
-offset_left = 537.0
-offset_top = 201.0
-offset_right = 595.0
-offset_bottom = 223.0
-scale = Vector2(5, 5)
-icon = SubResource("AtlasTexture_cwu1c")
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
 
-[node name="Label" type="Label" parent="Button"]
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground"]
+position = Vector2(682.5, 385)
+scale = Vector2(1.41563, 1.60417)
+texture = ExtResource("2_sc556")
+
+[node name="Sprite2D2" type="Sprite2D" parent="ParallaxBackground"]
+position = Vector2(679, 381.5)
+scale = Vector2(1.42708, 1.58125)
+texture = ExtResource("3_85kmc")
+
+[node name="Sprite2D3" type="Sprite2D" parent="ParallaxBackground"]
+position = Vector2(681, 381.5)
+scale = Vector2(1.43125, 1.58125)
+texture = ExtResource("4_fpax6")
+
+[node name="Sprite2D4" type="Sprite2D" parent="ParallaxBackground"]
+position = Vector2(683, 385)
+scale = Vector2(1.42083, 1.59583)
+texture = ExtResource("5_x64tp")
+
+[node name="Sprite2D5" type="Sprite2D" parent="ParallaxBackground"]
+visible = false
 texture_filter = 1
+position = Vector2(1211, 673)
+scale = Vector2(6, 6)
+texture = SubResource("AtlasTexture_vcs33")
+
+[node name="Sprite2D6" type="Sprite2D" parent="ParallaxBackground"]
+texture_filter = 1
+position = Vector2(1211, 673)
+scale = Vector2(3, 3)
+texture = SubResource("AtlasTexture_c8ivk")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 0
-offset_left = 20.2
-offset_top = 4.0
-offset_right = 57.2
-offset_bottom = 27.0
-scale = Vector2(0.5, 0.5)
+offset_left = 182.0
+offset_top = 381.0
+offset_right = 372.0
+offset_bottom = 697.0
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Button" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.631035, 0.631035, 0.631035, 1)
+theme_override_fonts/font = ExtResource("2_3ovdx")
+theme_override_font_sizes/font_size = 60
+theme_override_styles/focus = SubResource("StyleBoxEmpty_bqs0y")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_jg70c")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_axm8q")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_3d3ac")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_3f13q")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_1dks6")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_s7sv6")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_dt2lq")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_6cebv")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_q36og")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_cn8to")
 text = "start"
+autowrap_mode = 2
 
-[node name="Button2" type="Button" parent="."]
+[node name="Button2" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.631035, 0.631035, 0.631035, 1)
+theme_override_fonts/font = ExtResource("2_3ovdx")
+theme_override_font_sizes/font_size = 60
+theme_override_styles/focus = SubResource("StyleBoxEmpty_bqs0y")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_jg70c")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_axm8q")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_3d3ac")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_3f13q")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_1dks6")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_s7sv6")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_dt2lq")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_6cebv")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_q36og")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_cn8to")
+text = "exit
+"
+autowrap_mode = 2
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
-layout_mode = 0
-offset_left = 540.0
-offset_top = 340.0
-offset_right = 596.0
-offset_bottom = 362.0
+position = Vector2(1147, 460)
 scale = Vector2(5, 5)
-icon = SubResource("AtlasTexture_lnd8i")
+sprite_frames = SubResource("SpriteFrames_vublk")
+frame_progress = 0.104318
+flip_h = true
 
-[node name="Label" type="Label" parent="Button2"]
-layout_mode = 0
-offset_left = 20.8
-offset_top = 4.20001
-offset_right = 49.8
-offset_bottom = 27.2
-scale = Vector2(0.5, 0.5)
-text = "exit"
+[node name="Label" type="Label" parent="."]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -390.0
+offset_top = 302.0
+offset_right = 420.0
+offset_bottom = 382.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_3ovdx")
+theme_override_font_sizes/font_size = 70
+text = "The Dungeon Of Death"
+label_settings = SubResource("LabelSettings_tf6wc")
