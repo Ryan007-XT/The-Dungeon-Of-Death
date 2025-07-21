@@ -216,7 +216,7 @@ texture_filter = 1
 position = Vector2(1147, 460)
 scale = Vector2(5, 5)
 sprite_frames = SubResource("SpriteFrames_vublk")
-frame_progress = 0.104318
+frame_progress = 0.798692
 flip_h = true
 
 [node name="Label" type="Label" parent="."]
