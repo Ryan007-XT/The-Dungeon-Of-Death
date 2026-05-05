@@ -12,8 +12,8 @@
 
 ## Current Status
 
-This project is currently **on hold / paused**.
-Development will resume in the future when time and resources allow.
+This project is currently in a temporary break due to other priorities.
+Development will resume in the future.
 
 ## Notes
 
